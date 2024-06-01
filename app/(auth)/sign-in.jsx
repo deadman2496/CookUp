@@ -6,12 +6,14 @@ import { images} from '../../constants';
 import FormField from '../../components/FormField';
 import CustomButton from '../../components/CustomButton';
 import { Link, router } from 'expo-router';
+import { useGlobalContext } from '../../context/GlobalProvider';
 
 import { getCurrentUser, signIn } from '../../lib/appwrite';
 
 import dinner from "../../assets/images/dinner.png";
 
 const  SignIn = () => {
+  const { setUser, setIsLogged} = useGlobalContext();
   const [form, setForm] = useState({
     email: '',
     password: ''
@@ -29,15 +31,15 @@ const  SignIn = () => {
       const result = await getCurrentUser();
       setUser(result);
       setIsLogged(true);
-      //set it to global state...
 
-      router.replace('/home')
+      Alert.alert("Success","User signed in successfully");
+      router.replace('/home');
     } catch (error) {
-      Alert.alert('Error', error.message)
+      Alert.alert('Error', error.message);
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <SafeAreaView className="bg-primary h-full">
@@ -53,6 +55,7 @@ const  SignIn = () => {
 
           <Text className="text-3xl text-white text-semibold mt-10 font-psemibold">Welcome Back</Text>
           <FormField 
+            title="Email"
             placeholder="Email"
             value= {form.email}
             handleChangeText={(e)=> setForm({...form, email: e})}
@@ -60,6 +63,7 @@ const  SignIn = () => {
             keyboardType="email-address"
           />
           <FormField 
+            title="Password"
             placeholder="Password"
             value= {form.password}
             handleChangeText={(e)=> setForm({...form, password: e})}

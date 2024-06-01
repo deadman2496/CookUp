@@ -6,7 +6,7 @@ import { images} from '../../constants';
 import FormField from '../../components/FormField';
 import CustomButton from '../../components/CustomButton';
 import { Link, router , Stack } from 'expo-router';
-
+import { useGlobalContext } from '../../context/GlobalProvider';
 import {createUser} from '../../lib/appwrite';
 
 const onboardingSteps = [
@@ -87,6 +87,7 @@ const  signUp  = () => {
       router.back();
   };
   
+  const {setUser, setIsLogged} = useGlobalContext();
 
   const [form, setForm] = useState({
     userName: '',
@@ -103,7 +104,7 @@ const  signUp  = () => {
     setIsSubmitting(true);
     try {
       const result = await createUser(form.email, form.password, form.username);
-      setStatusBarNetworkActivityIndicatorVisible(result);
+      setUser(result);
       setIsLogged(true);
       //set it to global state...
 
