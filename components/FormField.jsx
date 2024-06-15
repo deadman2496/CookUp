@@ -19,10 +19,10 @@ const FormField = ({
             placeholder={placeholder}
             placeholderTextColor="#7b7b8b"
             onChangeText={handleChangeText}
-            secureTextEntry={title === 'Password' && !showPassword}
+            secureTextEntry={placeholder === 'Password' && !showPassword}
         />
 
-        {title === 'Password' && ( 
+        {placeholder === 'Password' && ( 
         <TouchableOpacity onPress={() =>
             setShowPassword(!showPassword)}>
                 <Image  
