@@ -110,6 +110,14 @@ const  TabsLayout  = () => {
             )
           }}
         />
+        <Tabs.Screen 
+                name='RecipeDetailScreen'
+                options={{
+                    title:"RecipeDetail",
+                    headerShown: false,
+                    href: null,
+                }}
+            />
         
       </Tabs>
       

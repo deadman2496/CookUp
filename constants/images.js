@@ -20,6 +20,7 @@ import pizzaFull from "../assets/images/pizza_2.png";
 import smoothie from "../assets/images/smoothie.png";
 import stirfry from "../assets/images/stirfry.png";
 import cookUp from "../assets/images/cookup.png";
+import poundCake from "../assets/images/pc.png";
 
 
 
@@ -47,4 +48,5 @@ export default {
     smoothie,
     stirfry,
     cookUp,
+    poundCake,
 };
