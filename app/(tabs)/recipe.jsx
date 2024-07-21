@@ -72,10 +72,13 @@ const newRecipe = () => {
   return (
     <SafeAreaView className="bg-black-500 h-full">
       <ScrollView className="px-4 my-6">
-        <Text className="text-2xl text-black-100 font-psemibold">
-          Upload
+      <View className="inline-block w-full">
+        <Text className="text-sm text-black font-sregular text-left">cancel</Text>
+        <Text className="text-2xl text-black-100 font-psemibold text-center">
+          New Recipe
         </Text>
-
+        <Text className="text-sm text-black font-sregular text-right">next</Text>
+        </View>
         <FormField 
           title="Recipe Title"
           value={form.title}
@@ -84,8 +87,209 @@ const newRecipe = () => {
           otherStyles="mt-10"
 
         />
+        <FormField 
+          title="Recipe Description"
+          value={form.description}
+          placeholder="Provide description for your dish here"
+          handleChangeText={(e) => setForm({...form, description: e})}
+          otherStyles="mt-10"
 
-        <View className="mt-7 space-y-2">
+        />
+        <View
+          horizontal
+        >
+          <CustomButton 
+            title="breakfast"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}}
+          />
+          <CustomButton 
+            title="lunch"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}}
+          />
+          <CustomButton
+            title="dinner"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}}
+          />
+          <CustomButton
+            title="dessert"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}} 
+          />
+          <CustomButton
+            title="side dish"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}} 
+          />
+          <CustomButton
+            title="snack"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}} 
+          />
+        </View>
+        <View
+          horizontal
+        >
+          <CustomButton 
+            title="American"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}}
+          />
+          <CustomButton 
+            title="Indian"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}}
+          />
+          <CustomButton
+            title="Thai"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}}
+          />
+          <CustomButton
+            title="Mexican"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}} 
+          />
+          <View
+          horizontal
+        >
+          <CustomButton 
+            title="Central American"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}}
+          />
+          <CustomButton 
+            title="Italian"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}}
+          />
+          <CustomButton
+            title="Greek"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}}
+          />
+          <CustomButton
+            title="Chinese"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}} 
+          />
+          <CustomButton
+            title="French"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}} 
+          />
+          <CustomButton
+            title="Japanese"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}} 
+          />
+          <CustomButton
+            title="Spanish"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}} 
+          />
+
+<CustomButton
+            title="Middle Eastern"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}} 
+          />
+          <CustomButton
+            title="South American"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}} 
+          />
+          <CustomButton
+            title="Indian"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}} 
+          />
+        </View>
+
+        <CustomButton
+            title="Vegan"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}} 
+          />
+          <CustomButton
+            title="Vegetarian"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}} 
+          />
+          <CustomButton
+            title="pescatarian"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}} 
+          />
+          <CustomButton
+            title="plant based"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}} 
+          />
+          <CustomButton
+            title="gluten free"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}} 
+          />
+          <CustomButton
+            title="nut free"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}} 
+          />
+          <CustomButton
+            title="lactose intolerant"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}} 
+          />
+          <CustomButton
+            title="low sodium"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}} 
+          />
+          <CustomButton
+            title="paleo"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}} 
+          />
+          <CustomButton
+            title="keto"
+            handlePress={()=>{}}
+            containerStyles="w-[105px] min-h-[75px] text-base m-1"
+            isLoading={()=>{}} 
+          />
+        </View>
+        <View className="w-[105px] min-h-[75px] text-base m-1">
           <Text>
             Upload your Photos
           </Text>

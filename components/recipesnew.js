@@ -10,17 +10,13 @@ import { useNavigation } from '@react-navigation/native';
 import { CachedImage } from '../helpers/image';
 import { useGlobalContext } from '../context/GlobalProvider';
 
-export default function Recipes({categories, meals}) {
+export default function Recipesnew({categories, meals}) {
 
     const navigation = useNavigation();
   return (
     <View className="mx-4 space-y-3">
-      <Text className="text-2xl font-psemibold text-neutral-500">Recipes</Text>
+      <Text className="text-2xl font-psemibold text-neutral-500">Recommended for you</Text>
       <View>
-        {
-          categories.length==0 || meals.length==0? (
-            <Loading size="large" className="mt-20" />
-           ): ( 
         <MasonryList
           data={meals}
           keyExtractor={(item) => item.idMeal}
@@ -29,9 +25,8 @@ export default function Recipes({categories, meals}) {
           renderItem={({item, i}) => <RecipeCard item={item} index={i} navigation={navigation} />}
           onEndReachedThreshold={0.1}
           className="container"
+          horizontal
         />
-        )
-      }
       </View>
     </View>
   )
@@ -44,16 +39,16 @@ const RecipeCard = ({item, index, navigation}) => {
     return (
         <Animated.View entering={FadeInDown.delay(index*100).duration(600).springify().damping(12)}>
             <Pressable 
-                className="w-full flex justify-center"
+                className="w-full flex justify-center pr-2"
                 onPress={() => navigation.navigate('RecipeDetailScreen', {...item})}
                 >
                 <View className="w-full" >
                 <Image  
                     source={{uri: item.strMealThumb}}
-                    className="w-full h-[250px] bg-black/5 rounded-t-xl"
+                    className="w-full h-[125px] lg:h-[250px] bg-black/5 rounded-t-xl"
                 />
                 </View>
-                <View className="w-full h-[100px] justify-start border rounded-b-xl shadow-xl">
+                <View className="w-full h-[100px] pb-2 justify-start border rounded-b-xl shadow">
                 <Text className="font-pmedium ml-1 mb-3 text-neutral-700 text-xs"> Review Placeholder</Text>
                 <Text className=" font-psemibold ml-1 mb-2 text-neutral-600 text-xs">
                     {

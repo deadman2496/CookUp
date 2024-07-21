@@ -10,7 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import { CachedImage } from '../helpers/image';
 import { useGlobalContext } from '../context/GlobalProvider';
 
-export default function Recipes({categories, meals}) {
+export default function Recipesearch({categories, meals}) {
 
     const navigation = useNavigation();
   return (
@@ -24,7 +24,7 @@ export default function Recipes({categories, meals}) {
         <MasonryList
           data={meals}
           keyExtractor={(item) => item.idMeal}
-          numColumns={1}
+          numColumns={2}
           showsVerticalScrollIndicator={false}
           renderItem={({item, i}) => <RecipeCard item={item} index={i} navigation={navigation} />}
           onEndReachedThreshold={0.1}
@@ -44,16 +44,16 @@ const RecipeCard = ({item, index, navigation}) => {
     return (
         <Animated.View entering={FadeInDown.delay(index*100).duration(600).springify().damping(12)}>
             <Pressable 
-                className="w-full flex justify-center"
+                className="w-full flex justify-center p-2 shadow-md shadow-black"
                 onPress={() => navigation.navigate('RecipeDetailScreen', {...item})}
                 >
                 <View className="w-full" >
                 <Image  
                     source={{uri: item.strMealThumb}}
-                    className="w-full h-[250px] bg-black/5 rounded-t-xl"
+                    className="w-full h-[125px] lg:h-[250px] bg-black/5 rounded-t-xl"
                 />
                 </View>
-                <View className="w-full h-[100px] justify-start border rounded-b-xl shadow-xl">
+                <View className="w-full h-[100px] justify-start border rounded-b-xl">
                 <Text className="font-pmedium ml-1 mb-3 text-neutral-700 text-xs"> Review Placeholder</Text>
                 <Text className=" font-psemibold ml-1 mb-2 text-neutral-600 text-xs">
                     {

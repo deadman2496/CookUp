@@ -13,6 +13,8 @@ import { useGlobalContext } from '../../context/GlobalProvider'
 import Recipes from '../../components/recipes'
 import Categories from '../../components/categories'
 import axios from 'axios';
+import Recipestrend from '../../components/recipestrend';
+import Recipesnew from '../../components/recipesnew';
 
 export default function Home() {
   const { user, setUser, setIsLogged } = useGlobalContext();
@@ -29,13 +31,17 @@ export default function Home() {
     setRefreshing(false);
   }
 
-  const [activeCategory, setActiveCategory] = useState('Beef');
+  const [latestMeal, setLatestMeal] = useState([]);
   const [categories, setCategories] = useState([]);
   const [meals, setMeals] = useState([]);
+  const [randomMeal, setRandomMeal] = useState([]);
+  const [activeCategory, setActiveCategory] = useState('Beef');
 
   useEffect(() => {
     getCategories();
     getRecipes();
+    getLatestMeal();
+    getRandomMeal();
   }, [])
 
   const handleChangeCategory = category => {
@@ -43,6 +49,31 @@ export default function Home() {
     setActiveCategory(category);
     setMeals([]);
   }
+
+  const getRandomMeal = async () =>{
+    try{
+      const response = await axios.get('https://www.themealdb.com/api/json/v2/9973533/randomselection.php');
+      //console.log('got categories: ', response.data);
+      if(response && response.data){
+        setRandomMeal(response.data.meals);
+      }
+    }catch (err){
+      console.log('error :', err.message);
+    }
+  }
+
+  const getLatestMeal = async () =>{
+    try{
+      const response = await axios.get('https://www.themealdb.com/api/json/v2/9973533/latest.php');
+      //console.log('got categories: ', response.data);
+      if(response && response.data){
+        setLatestMeal(response.data.meals);
+      }
+    }catch (err){
+      console.log('error :', err.message);
+    }
+  }
+  
   const getCategories = async () =>{
     try{
       const response = await axios.get('https://www.themealdb.com/api/json/v2/9973533/categories.php');
@@ -84,29 +115,17 @@ export default function Home() {
                 </Text>
         </View>
 
-        {/* search bar */}
-        <View className="mx-4 flex-row items-center rounded-full bg-black/5 p-[6px]">
-              <TextInput
-                placeholder='Search a recipe'
-                placeholderTextColor={'gray'}
-                className="flex-1 text-xl mb-1 pl-3 tracking-wider"
-              />
-              <View className="bg-primary-300 rounded-full p-3">
-                <Image 
-                  source={icons.search}
-                  className="w-7 h-7"
-                />
-              </View>
-             </View>
+        {/* recipes */}
+        <View>
+          <Recipestrend meals={meals} categories={categories}/>
+          <Recipesnew meals={meals} categories={categories} /> 
+          <Recipes meals={meals} categories={categories} />
+        </View>
+
 
         {/* categories */}
         <View>
           { categories.length>0 && <Categories categories={categories} activeCategory={activeCategory} handleChangeCategory={handleChangeCategory} /> }
-        </View>
-
-        {/* recipes */}
-        <View>
-          <Recipes meals={meals} categories={categories} />
         </View>
       </ScrollView>
     </View>

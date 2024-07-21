@@ -190,9 +190,6 @@ onSubmitSteps = async () => {
             <Link href="/sign-in" className="text-lg font-psemibold text-System-400">
               Sign in
             </Link>
-            <Link href="/info" className="text-lg font-psemibold text-System-400">
-              Sign in
-            </Link>
             <Text className="text-lg text-black-100 font-pregular">!</Text>
           </View>
       </ScrollView>

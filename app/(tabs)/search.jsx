@@ -12,6 +12,9 @@ import Recipes from '../../components/recipes';
 import { useGlobalContext } from '../../context/GlobalProvider';
 import useAppwrite from '../../lib/useAppwrite';
 import { StatusBar } from 'expo-status-bar';
+import axios from 'axios';
+import Recipesearch from '../../components/recipesearch';
+import Recipesnew from '../../components/recipesnew';
 
 const Search = () => {
   const { user, setUser, setIsLogged } = useGlobalContext();
@@ -94,7 +97,8 @@ const Search = () => {
 
         {/* recipes */}
         <View>
-          <Recipes meals={meals} categories={categories} />
+          <Recipesnew meals={meals} categories={categories} />
+          <Recipesearch meals={meals} categories={categories} numColumns={2} />
         </View>
       </ScrollView>
     </View>
