@@ -1,0 +1,7 @@
+<svg width="26" height="18" viewBox="0 0 26 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="dish plate">
+<path id="Subtract" d="M3.24174 16.5C3.20215 16.1443 3.18182 15.7828 3.18182 15.4167C3.18182 10.0319 7.57757 5.66667 13 5.66667C18.4224 5.66667 22.8182 10.0319 22.8182 15.4167C22.8182 15.7828 22.7979 16.1443 22.7583 16.5H24.9511C24.9835 16.1432 25 15.7818 25 15.4167C25 8.83527 19.6274 3.5 13 3.5C6.37258 3.5 1 8.83527 1 15.4167C1 15.7818 1.01654 16.1432 1.04892 16.5H3.24174Z" fill="white"/>
+<path id="Line 6" d="M1 16.5H25" stroke="white" stroke-width="2" stroke-linecap="round"/>
+<path id="Line 7" d="M13 3.5V1.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
+</g>
+</svg>
