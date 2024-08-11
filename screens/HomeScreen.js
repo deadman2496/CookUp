@@ -2,12 +2,14 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, Image } from 'react-native';
 import { recipes, featuredRecipes } from '../constants/recipeindex';
+import { useNavigation } from '@react-navigation/native';
 
-const HomeScreen = ({ navigation }) => {
+const HomeScreen = () => {
+  const navigation = useNavigation();
 
   const RecipeCard = ({ item, horizontal }) => (
     <TouchableOpacity 
-      onPress={() => navigation.navigate('Details', { recipeId: item.id })}
+      onPress={() => navigation.navigate('Details', { recipe: item })}
       style={horizontal ? styles.horizontalCard : styles.card}
     >
         <Image source={item.image} style={styles.cardImage} resizeMode="cover" />
