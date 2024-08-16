@@ -1,6 +1,6 @@
 // In screens/RecipeDetailScreen.js
 import React, {useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, FlatList } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
 import { Rating } from 'react-native-ratings';
@@ -35,46 +35,46 @@ const RecipeDetailScreen = ({ route }) => {
     const handleFilterToggle = (key, value) => { 
         setSelectedFilters(prevFilters => ({
           ...prevFilters,
-          [key]: value,
+          [key]: value
         }));
       };
-
-    const [routes] = useState([
-        { key: 'ingredients', title: 'Ingredients' },
-        { key: 'instructions', title: 'Instructions' },
-     ]);
 
     const toggleSave = () => { 
         setSaved(!saved);
     };
 
     const IngredientsRoute = () => (
-        <View style={[styles.scene, { backgroundColor: '#ff4081' }]}>
-            <Text>Ingredients</Text>
-        </View>
+      <ScrollView style={styles.tabContainer}>
+          {recipe.ingredients.map((ingredient, index) => (
+            <Text key={index} style={styles.tabText}>{ingredient}</Text>
+          ))}
+      </ScrollView>
+    );
+
+    const InstructionsRoute = () => (
+      <ScrollView style={styles.tabContainer}>
+        {recipe.instructions.map((instruction, index) => (
+          <Text key={index} style={styles.tabText}>{index + 1}. {instruction}</Text>
+        ))}
+      </ScrollView>
      );
 
-     const InstructionsRoute = () => (
-        <View style={[styles.scene, { backgroundColor: '#673ab7' }]}>
-          <Text>Instructions here...</Text>
-        </View>
-      );
-      
-      const renderScene = SceneMap({
-        ingredients: IngredientsRoute,
-        instructions: InstructionsRoute,
-      });
+     const [routes] = useState([
+      { key: 'ingredients', title: 'Ingredients' },
+      { key: 'instructions', title: 'Instructions' },
+      ]);
+
 
 
 
   return (
     <ScrollView style={StyleSheet.container}>
-      <Image source={recipe.Image} style={styles.image} />
+      <Image source={recipe.image} style={styles.image} />
       <View style={styles.infoContainer}>
       <Text style={styles.title}>{recipe.title}</Text>
 
-      {/* User defined filters */}
-      <View style={styles.filtersContainer}>
+      {/* User defined filters //
+        <View style={styles.filtersContainer}>
         {recipe.filters && recipe.filters.map(filter => (
           <View key={filter.key} style={styles.filterItem}> 
             <Text style={styles.filterLabel}>{filter.label}</Text>
@@ -91,6 +91,18 @@ const RecipeDetailScreen = ({ route }) => {
           </View>
         ))}
 
+      </View> */}
+      <View style={styles.filtersContainer}>
+        <View style={styles.filterTag}>
+          <Text style={styles.filterText}>{recipe.filters.mealType}</Text>
+        </View>
+        <View style={styles.filterTag}>
+          <Text style={styles.filterText}>{recipe.filters.cuisine}</Text>
+        </View><View style={styles.filterTag}>
+          <Text style={styles.filterText}>{recipe.filters.dietaryPreferences}</Text>
+        </View><View style={styles.filterTag}>
+          <Text style={styles.filterText}>{recipe.filters.averageCost}</Text>
+        </View>
       </View>
 
       <View style={styles.detailsRow}>
@@ -137,12 +149,15 @@ const RecipeDetailScreen = ({ route }) => {
           />
         </TouchableOpacity>
       </View>
-      <TabView
-  navigationState={{ index, routes }}
-  renderScene={renderScene}
-  onIndexChange={setIndex}
-  style={styles.tabView}
-/>
+      <TabView 
+        navigationState={{ index, routes}}
+        renderScene={SceneMap({
+          ingredients: IngredientsRoute,
+          instructions: InstructionsRoute,
+        })}
+        onIndexChange={setIndex}
+        style={styles.tabView}
+      />
     </View>
     </ScrollView>
   );
@@ -171,14 +186,22 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginBottom: 10,
     },
-    filtersContainer: { 
-      marginBottom: 10,
+    filtersContainer: {
+      flexDirection: 'row',
+      flexWrap: 'wrap', 
+      marginBottom: 15,
+      alignItems: 'center',
+      justifyContent: 'center',
     },
-    filterItem: {
-      marginBottom: 10,
+    filterText:{
+      fontSize: 14,
     },
-    filterLabel: {
-      fontSize: 16,
+    filterTag: {
+      backgroundColor: '#e0e0e0',
+      borderRadius: 20,
+      paddingHorizontal: 10,
+      paddingVertical: 5,
+      marginRight: 5,
       marginBottom: 5,
     },
     picker: {
