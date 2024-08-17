@@ -1,5 +1,5 @@
 // screens/SearchScreen.js
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, TextInput, FlatList, Text, StyleSheet, TouchableOpacity, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
@@ -13,6 +13,11 @@ import { recipes } from '../constants/recipeData';
 const SearchScreen = () => {
     const navigation = useNavigation();
     const [searchQuery, setSearchQuery] = useState('');
+    const [selectedFilters, setSelectedFilters] = useState([{
+      mealType: '',
+      cuisine: '',
+      dietaryPreferences: '',
+  }]);
   const [query, setQuery] = useState('');
   const [timeoutId, setTimeoutId] = useState(null);
   const [category, setCategory] = useState('All');
@@ -21,9 +26,17 @@ const SearchScreen = () => {
   const [selectedRatings, setSelectedRatings] = useState([]);
   const [filteredRecipes, setFilteredRecipes] = useState([]);
 
-  const openFilterDrawer = () => {
-    navigation.openDrawer();
-   };
+  // useEffect(() => {
+  //   setFilteredRecipes(shuffleArray(recipes));
+  // }, []);
+
+  // const openFilterDrawer = () => {
+  //   navigation.openDrawer();
+  //  };
+
+  //  const shuffleArray = (array) => {
+  //    return array.sort(() => Math.random() - 0.5);
+  //   };
 
   const toggleCategory = (category) => {
     const index = selectedCategories.indexOf(category);
@@ -56,24 +69,22 @@ const SearchScreen = () => {
     setFilteredRecipes(filtered);
    };
 
-  const handleSearch = (text) => {
-    setQuery(text);
-    if (timeoutId) clearTimeout(timeoutId);  // Clear the previous timeout
+   const handleSearch = () => {
+    let filtered = recipes.filter((recipe) => {
+        const matchesSearchQuery = recipe.title.toLowerCase().includes(searchQuery.toLowerCase());
+        const matchesMealType = selectedFilters.mealType ? recipe.mealType === selectedFilters.mealType : true;
+        const matchesCuisine = selectedFilters.cuisine ? recipe.cuisine === selectedFilters.cuisine : true;
+        const matchesDietaryPreferences = selectedFilters.dietaryPreferences
+            ? recipe.dietaryPreferences.includes(selectedFilters.dietaryPreferences)
+            : true;
+        return matchesSearchQuery && matchesMealType && matchesCuisine && matchesDietaryPreferences;
+    });
+    setFilteredRecipes(filtered);
+};
 
-    const newTimeoutId = setTimeout(() => {
-      if (text.length > 0) {
-        const formattedQuery = text.toLowerCase();
-        const filteredData = recipes.filter(recipe => {
-          return recipe.title.toLowerCase().includes(formattedQuery);
-        });
-        setFilteredRecipes(filteredData);
-      } else {
-        setFilteredRecipes([]);
-      }
-    }, 300);  // Only trigger the search after 300ms of no input
-
-    setTimeoutId(newTimeoutId);
-  };
+  const handleFilterChange = (filterType, value) => {
+    setSelectedFilters({ ...selectedFilters, [filterType]: value });
+   };
 
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.itemContainer}>
@@ -86,23 +97,38 @@ const SearchScreen = () => {
       <TextInput
         style={styles.searchBar}
         placeholder="Search recipes..."
-        value={query}
-        onChangeText={handleSearch}
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        onSubmitEditing={handleSearch}
       />
         <Button title="Filter" onPress={() => navigation.openDrawer()} />
 
       <Text>Category:</Text>
       <View style={styles.filterContainer}>
-        {categories.map(category => (
-          <TouchableOpacity
-            key={category}
-            style={[styles.button, selectedCategories.includes(category) ? styles.buttonSelected : null]}
-            onPress={() => toggleCategory(category)}
-          >
-            <Text style={styles.buttonText}>{category}</Text>
-          </TouchableOpacity>
-        ))}
-        </View>
+                <Text>Meal Type:</Text>
+                <TouchableOpacity onPress={() => handleFilterChange('mealType', 'Breakfast')}>
+                    <Text style={selectedFilters.mealType === 'Breakfast' ? styles.selectedFilter : styles.filterOption}>Breakfast</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleFilterChange('mealType', 'Dinner')}>
+                    <Text style={selectedFilters.mealType === 'Dinner' ? styles.selectedFilter : styles.filterOption}>Dinner</Text>
+                </TouchableOpacity>
+
+                {/* Additional filters for cuisine, dietary preferences, etc. */}
+            </View>
+
+            <FlatList
+                data={filteredRecipes}
+                keyExtractor={(item) => item.id}
+                renderItem={({ item }) => (
+                    <View style={styles.recipeCard}>
+                        <Text style={styles.recipeTitle}>{item.title}</Text>
+                        <Text>Cuisine: {item.cuisine}</Text>
+                        <Text>Meal Type: {item.mealType}</Text>
+                        <Text>Dietary Preferences: {item.dietaryPreferences.join(', ') || 'None'}</Text>
+                    </View>
+                )}
+                />
+
 
       <Text>Minimum Rating:</Text>
       <View style={styles.filterContainer}>
@@ -131,6 +157,7 @@ const SearchScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#fff',
     padding: 10,
   },
   searchBar: {
@@ -154,6 +181,24 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     marginBottom: 10,
+  },
+  filterOption: {
+    color: '#007bff',
+   },
+   selectedFilter: {
+    color: '#007bff',
+    fontWeight: 'bold',
+   },
+   recipeCard: {
+    padding: 15,
+    borderColor: '#f9f9f9',
+    borderRadius: 5,
+    marginBottom: 10,
+   },
+   recipeTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 5,
   },
   button: {
     backgroundColor: '#ccc',
