@@ -20,6 +20,14 @@ const RecipeDetailScreen = ({ route, navigation }) => {
       { key: 'instructions', title: 'Instructions' },
       ]);
 
+    const handleAddReviewPress = () => {
+      navigation.navigate('AddReviewPage', { recipe, onAddReview: (newReview) => {
+        recipe.reviews.push(newReview);
+        recipe.reviewCount += 1;
+      } });
+      alert('add a review now.');
+     };
+
     const handleFilterToggle = (key, value) => { 
         setSelectedFilters(prevFilters => ({
           ...prevFilters,
@@ -28,8 +36,9 @@ const RecipeDetailScreen = ({ route, navigation }) => {
       };
 
     const handleReviewPress = () => {
-      navigation.navigate('ReviewPage', { reviews: recipe.reviews });
+      navigation.navigate('ReviewPage', { reviews: recipe.reviews, recipe });
     };
+
 
     const toggleSave = () => { 
         setSaved(!saved);
@@ -161,6 +170,13 @@ const RecipeDetailScreen = ({ route, navigation }) => {
       />
       </View>
 
+      <View style={styles.reviewPromptContainer}>
+        <Text style={styles.reviewPromptText}>Have you made this recipe?</Text>
+        <TouchableOpacity style={styles.addReviewButton} onPress={handleAddReviewPress}>
+          <Text style={styles.addReviewButtonText}>Add a Review</Text>
+        </TouchableOpacity>
+      </View>
+
       
     </View>
     </ScrollView>
@@ -271,7 +287,29 @@ const styles = StyleSheet.create({
       fontSize: 16,
       marginBottom: 10,
     },
-    }
-);
+    reviewPromptContainer: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      padding: 15,
+      backgroundColor: '#f9f9f9',
+      borderTopWidth: 1,
+      borderColor: '#e0e0e0',
+     },
+    reviewPromptText: {
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+    addReviewButton: {
+      backgroundColor: '#ff6347',
+      paddingHorizontal: 15,
+      paddingVertical: 8,
+      borderRadius: 5,
+    },
+    addReviewButtonText: {
+      color: '#fff',
+      fontSize: 16,
+    },
+});
 
 export default RecipeDetailScreen;

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button } from 'react-native';
 
-const AddRecipeScreen = () => {
+const NewRecipeScreen = () => {
   const [title, setTitle] = useState('');
 
   const handleAddRecipe = () => {
@@ -22,4 +22,4 @@ const AddRecipeScreen = () => {
   );
 };
 
-export default AddRecipeScreen;
+export default NewRecipeScreen;

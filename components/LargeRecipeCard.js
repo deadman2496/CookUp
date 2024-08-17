@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Rating } from 'react-native-ratings';
 
+
 const LargeRecipeCard = ({ item, onPress, toggleBookmark, isBookmarked }) => {
     return (
         <TouchableOpacity style={styles.largeCard} onPress={onPress}>

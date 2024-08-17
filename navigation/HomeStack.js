@@ -4,6 +4,7 @@ import HomeScreen from '../screens/HomeScreen';
 import DetailsScreen from '../screens/DetailsScreen';
 import RecipeDetailScreen from '../screens/RecipeDetailScreen';
 import ReviewPage from '../screens/ReviewPage';
+import AddReviewPage from '../screens/AddReviewPage';
 import { getFocusedRouteNameFromRoute } from '@react-navigation/native';
 
 const Stack = createStackNavigator();
@@ -35,6 +36,11 @@ const HomeStack = () => {
         name="ReviewPage"
         component={ReviewPage}
         options={{ title: 'Reviews' }}
+      />
+      <Stack.Screen
+        name="AddReviewPage"
+        component={AddReviewPage}
+        options={{ title: 'Add Review' }}
       />
     </Stack.Navigator>
 

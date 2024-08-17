@@ -28,7 +28,7 @@ const HomeScreen = () => {
    const renderSmallCard = ({ item }) => (
       <SmallRecipeCard 
         item={item}
-        onPress={() => navigation.navigate('Details', { recipe: item })}
+        onPress={() => navigation.navigate('NoDrawerStack',{screen:'Details', params: { recipe: item },})}
         toggleBookmark={() => toggleBookmark(item.id)}
         isBookmarked={bookmarkedRecipes.includes(item.id)}
       />
@@ -37,7 +37,7 @@ const HomeScreen = () => {
     const renderMediumCard = ({ item }) => (
       <MediumRecipeCard 
         item={item}
-        onPress={() => navigation.navigate('Details', { recipe: item })}
+        onPress={() => navigation.navigate('NoDrawerStack',{screen:'Details', params: { recipe: item },})}
         toggleBookmark={() => toggleBookmark(item.id)}
         isBookmarked={bookmarkedRecipes.includes(item.id)}
       />
@@ -46,7 +46,7 @@ const HomeScreen = () => {
   const renderLargeCard = ({ item }) => (
     <LargeRecipeCard 
       item={item}
-      onPress={() => navigation.navigate('Details', { recipe: selectedRecipe })}
+      onPress={() => navigation.navigate('NoDrawerStack',{screen:'Details', params: { recipe: item },})}
       toggleBookmark={() => toggleBookmark(item.id)}
       isBookmarked={bookmarkedRecipes.includes(item.id)}
     />
