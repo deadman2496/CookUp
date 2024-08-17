@@ -46,7 +46,7 @@ const HomeScreen = () => {
   const renderLargeCard = ({ item }) => (
     <LargeRecipeCard 
       item={item}
-      onPress={() => navigation.navigate('Details', { recipe: item })}
+      onPress={() => navigation.navigate('Details', { recipe: selectedRecipe })}
       toggleBookmark={() => toggleBookmark(item.id)}
       isBookmarked={bookmarkedRecipes.includes(item.id)}
     />

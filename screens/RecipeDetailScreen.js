@@ -1,36 +1,24 @@
 // In screens/RecipeDetailScreen.js
 import React, {useState } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, FlatList } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, FlatList, Dimensions } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
 import { Rating } from 'react-native-ratings';
 import { TabView, SceneMap } from 'react-native-tab-view';
-import poundCake from "../assets/images/pc.png";
-import ChocoCake from '../assets/images/Chocolate_cake.png';
-import PastaCarbonara from '../assets/images/Pasta_Carbonara.png';
-import CheesePizza from '../assets/images/Cheese_Pizza.png';
-import CaesarSalad from '../assets/images/Caesar_Salad.png';
-import PoundCake from '../assets/images/Traditional_Pound_Cake.png';
-import SpanishFlan from '../assets/images/Spanish_Flan.png';
-import ChickenTeriyaki from '../assets/images/Chicken_Teriyaki.png';
-import { recipes, featuredRecipes } from '../constants/recipeindex';
 
-const recipeImages = {
-    ChocoCake,
-    PastaCarbonara,
-    CheesePizza,
-    CaesarSalad,
-    PoundCake,
-    SpanishFlan,
-    ChickenTeriyaki,
-    poundCake,
-};
 
-const RecipeDetailScreen = ({ route }) => {
+
+const RecipeDetailScreen = ({ route, navigation }) => {
     const { recipe } = route.params;
     const [saved, setSaved] = useState(false);
     const [index, setIndex] = useState(0);
     const [selectedFilters, setSelectedFilters] = useState({});
+
+    
+    const [routes] = useState([
+      { key: 'ingredients', title: 'Ingredients' },
+      { key: 'instructions', title: 'Instructions' },
+      ]);
 
     const handleFilterToggle = (key, value) => { 
         setSelectedFilters(prevFilters => ({
@@ -39,6 +27,10 @@ const RecipeDetailScreen = ({ route }) => {
         }));
       };
 
+    const handleReviewPress = () => {
+      navigation.navigate('ReviewPage', { reviews: recipe.reviews });
+    };
+
     const toggleSave = () => { 
         setSaved(!saved);
     };
@@ -46,7 +38,9 @@ const RecipeDetailScreen = ({ route }) => {
     const IngredientsRoute = () => (
       <ScrollView style={styles.tabContainer}>
           {recipe.ingredients.map((ingredient, index) => (
-            <Text key={index} style={styles.tabText}>{ingredient}</Text>
+            <Text key={index} style={styles.tabText}>
+              {ingredient}
+              </Text>
           ))}
       </ScrollView>
     );
@@ -54,23 +48,45 @@ const RecipeDetailScreen = ({ route }) => {
     const InstructionsRoute = () => (
       <ScrollView style={styles.tabContainer}>
         {recipe.instructions.map((instruction, index) => (
-          <Text key={index} style={styles.tabText}>{index + 1}. {instruction}</Text>
+          <Text key={index} style={styles.tabText}>
+            {index + 1}. {instruction}
+            </Text>
         ))}
       </ScrollView>
      );
-
-     const [routes] = useState([
-      { key: 'ingredients', title: 'Ingredients' },
-      { key: 'instructions', title: 'Instructions' },
-      ]);
 
 
 
 
   return (
-    <ScrollView style={StyleSheet.container}>
+    <ScrollView style={StyleSheet.container} showsVerticalScrollIndicator={false}>
       <Image source={recipe.image} style={styles.image} />
       <View style={styles.infoContainer}>
+      <View style={styles.headerRow}>
+        <Text style={styles.creatorText}>by {recipe.creator}</Text>
+        <View style={styles.ratingRow}>
+          {/* <Text style={styles.ratingValue}>{recipe.rating.toFixed(1)}</Text> */}
+        <Rating
+          type="star"
+          ratingCount={5}
+          imageSize={15}
+          onFinishRating={(rating) => console.log("Rated: ", rating)}
+          style={styles.rating}
+          ratingContainerStyle={{backgroundColor: 'transparent'}}
+        />
+        <TouchableOpacity onPress={handleReviewPress}>
+          <Text style={styles.ratingCount}>({recipe.ratingCount} reviews)</Text>
+        </TouchableOpacity>
+        </View>
+        <TouchableOpacity onPress={toggleSave}>
+          <Ionicons
+            name={saved ? 'bookmark' : 'bookmark-outline'}
+            size={30}
+            color={saved ? 'red' : 'grey'}
+            style={styles.saveIcon}
+          />
+        </TouchableOpacity>
+      </View>
       <Text style={styles.title}>{recipe.title}</Text>
 
       {/* User defined filters //
@@ -132,32 +148,20 @@ const RecipeDetailScreen = ({ route }) => {
         </View>
         
       </View>
-                <View style={styles.ratingContainer}>
-        <Rating
-          type="star"
-          ratingCount={5}
-          imageSize={30}
-          onFinishRating={(rating) => console.log("Rated: ", rating)}
-          style={styles.rating}
-        />
-        <TouchableOpacity onPress={toggleSave}>
-          <Ionicons
-            name={saved ? 'bookmark' : 'bookmark-outline'}
-            size={30}
-            color={saved ? 'red' : 'grey'}
-            style={styles.saveIcon}
-          />
-        </TouchableOpacity>
-      </View>
-      <TabView 
+      <View style={styles.tabViewContainer}>
+      <TabView
         navigationState={{ index, routes}}
         renderScene={SceneMap({
           ingredients: IngredientsRoute,
           instructions: InstructionsRoute,
         })}
         onIndexChange={setIndex}
+        initialLayout={{ width: Dimensions.get('window').width }}
         style={styles.tabView}
       />
+      </View>
+
+      
     </View>
     </ScrollView>
   );
@@ -174,8 +178,33 @@ const styles = StyleSheet.create({
     infoContainer: {
       padding: 10,
     },
+    headerRow:{
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: 10,
+    },  
+    ratingRow:{
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 10,
+    },
+    ratingValue: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      marginRight: 10,
+    },
+    reviewCount: {
+      fontSize: 14,
+      color: '#666',
+      marginLeft: 10,
+    },
+    creatorText: {
+      fontSize: 16,
+      color: '#666',
+    },
     rating: {
-      flex: 1,
+      marginHorizontal: 10,
     },
     saveIcon: {
       padding: 10,
@@ -227,6 +256,20 @@ const styles = StyleSheet.create({
     },
     detailText: {
       fontSize: 16,
+    },
+    tabView:{
+      flex: 1,
+    },
+    tabViewContainer:{
+      flex: 1,
+      height: Dimensions.get('window').height - 400,
+    }, 
+    tabContainer: {
+      padding: 15,
+    },
+    tabText: {
+      fontSize: 16,
+      marginBottom: 10,
     },
     }
 );
