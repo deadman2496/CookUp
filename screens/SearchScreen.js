@@ -218,7 +218,7 @@ import MediumRecipeCard from '../components/MediumRecipeCard';
 
 // });
 
-const SearchScreen = () => {
+const SearchScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilters, setSelectedFilters] = useState({
     mealType: '',
