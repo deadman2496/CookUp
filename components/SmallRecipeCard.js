@@ -3,8 +3,18 @@ import { View, Text, FlatList, TouchableOpacity, Image, StyleSheet, ScrollView }
 import { Ionicons } from '@expo/vector-icons';
 import { Rating } from 'react-native-ratings';
 import { recipes } from '../constants/recipeindex';
+import { useFavorite } from '../contexts/BookmarkContext';
 
-const SmallRecipeCard = ({ item, onPress, toggleBookmark, isBookmarked}) => {
+const SmallRecipeCard = ({ item, onPress}) => {
+    const { isFavorite, addFavorite, removeFavorite } = useFavorite();
+
+    const handleBookmarkToggle = () => {
+        if (isFavorite(item.id)) {
+            removeFavorite(item.id);
+        } else {
+            addFavorite(item);
+        }
+    };
     return (
         <TouchableOpacity style={styles.smallCard} onPress={onPress}>
             <Image source={item.image} style={styles.smallImage} />
@@ -17,11 +27,11 @@ const SmallRecipeCard = ({ item, onPress, toggleBookmark, isBookmarked}) => {
                         startingValue={item.rating}
                         readonly
                     />
-                    <TouchableOpacity onPress={toggleBookmark}>
+                    <TouchableOpacity onPress={handleBookmarkToggle}>
                         <Ionicons 
-                            name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
+                            name={isFavorite(item.id) ? 'bookmark' : 'bookmark-outline'}
                             size={16}
-                            color={isBookmarked ? 'green' : 'grey'}
+                            color="green"
                         />
                     </TouchableOpacity>
                 </View>

@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 import { createStackNavigator } from '@react-navigation/stack';
+import { FavoriteRecipesProvider } from './contexts/BookmarkContext';
 import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from './screens/HomeScreen';
 import SettingsScreen from './screens/SettingsScreen';
@@ -19,7 +20,7 @@ import ReviewPage from './screens/ReviewPage';
 import { Button, View} from 'react-native';
 import SearchScreen from './screens/SearchScreen';
 import RecipeDetailScreen from './screens/RecipeDetailScreen';
-import { AuthContext, AuthProvider } from './constants/AuthContext';
+import { AuthContext, AuthProvider } from './contexts/AuthContext';
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -115,6 +116,7 @@ const Logout = ({navigation}) => {
 
 export default function App() {
   return (
+    <FavoriteRecipesProvider>
     <NavigationContainer>
       <Stack.Navigator>
                 {/* Main Drawer Navigator */}
@@ -124,5 +126,6 @@ export default function App() {
                 <Stack.Screen name="NoDrawerStack" component={NoDrawerStackNavigator} options={{ headerShown: false }} />
             </Stack.Navigator>
     </NavigationContainer>
+    </FavoriteRecipesProvider>
   );
 };

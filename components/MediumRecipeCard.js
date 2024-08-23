@@ -2,8 +2,18 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Rating } from 'react-native-ratings';
+import { useFavorite } from '../contexts/BookmarkContext';
 
-const MediumRecipeCard = ({ item, onPress, toggleBookmark, isBookmarked }) => {
+const MediumRecipeCard = ({ item, onPress }) => {
+    const { isFavorite, addFavorite, removeFavorite } = useFavorite();
+
+    const handleBookmarkToggle = () => {
+        if (isFavorite(item.id)) {
+            removeFavorite(item.id);
+        } else {
+            addFavorite(item);
+        }
+     };
     return (
         <TouchableOpacity style={styles.mediumCard} onPress={onPress}>
             <Image source={item.image} style={styles.mediumImage} />
@@ -16,11 +26,11 @@ const MediumRecipeCard = ({ item, onPress, toggleBookmark, isBookmarked }) => {
                         startingValue={item.rating}
                         readonly
                     />
-                    <TouchableOpacity onPress={toggleBookmark}>
+                    <TouchableOpacity onPress={handleBookmarkToggle}>
                         <Ionicons
-                            name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
+                            name={isFavorite(item.id) ? 'bookmark' : 'bookmark-outline'}
                             size={20}
-                            color={isBookmarked ? 'gold' : 'grey'}
+                            color="green"
                         />
                     </TouchableOpacity>
                 </View>

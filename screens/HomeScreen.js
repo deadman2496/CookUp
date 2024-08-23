@@ -8,29 +8,30 @@ import { useNavigation } from '@react-navigation/native';
 import SmallRecipeCard from '../components/SmallRecipeCard';
 import MediumRecipeCard from '../components/MediumRecipeCard';
 import LargeRecipeCard from '../components/LargeRecipeCard';
+import { useFavorite } from '../contexts/BookmarkContext';
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  const [bookmarkedRecipes, setBookmarkedRecipes] = useState([]);
+  // const [bookmarkedRecipes, setBookmarkedRecipes] = useState([]);
+  const { favoriteRecipes } = useFavorite(); 
 
-  const savedRecipes = recipes.filter(recipe => bookmarkedRecipes.includes(recipe.id));
+
+  // const savedRecipes = recipes.filter(recipe => bookmarkedRecipes.includes(recipe.id));
   const recommendedRecipes = recipes.slice(0,5);
   const latestRecipes= recipes.slice(5,10); 
 
-  const toggleBookmark = (id) => {
-    if (bookmarkedRecipes.includes(id)) {
-      setBookmarkedRecipes(bookmarkedRecipes.filter(recipeId => recipeId !== id));
-    } else {
-      setBookmarkedRecipes([...bookmarkedRecipes, id]);
-    }
-   };
+  // const toggleBookmark = (id) => {
+  //   if (bookmarkedRecipes.includes(id)) {
+  //     setBookmarkedRecipes(bookmarkedRecipes.filter(recipeId => recipeId !== id));
+  //   } else {
+  //     setBookmarkedRecipes([...bookmarkedRecipes, id]);
+  //   }
+  //  };
 
    const renderSmallCard = ({ item }) => (
       <SmallRecipeCard 
         item={item}
         onPress={() => navigation.navigate('NoDrawerStack',{screen:'Details', params: { recipe: item },})}
-        toggleBookmark={() => toggleBookmark(item.id)}
-        isBookmarked={bookmarkedRecipes.includes(item.id)}
       />
     );
 
@@ -38,8 +39,6 @@ const HomeScreen = () => {
       <MediumRecipeCard 
         item={item}
         onPress={() => navigation.navigate('NoDrawerStack',{screen:'Details', params: { recipe: item },})}
-        toggleBookmark={() => toggleBookmark(item.id)}
-        isBookmarked={bookmarkedRecipes.includes(item.id)}
       />
      );
 
@@ -47,8 +46,6 @@ const HomeScreen = () => {
     <LargeRecipeCard 
       item={item}
       onPress={() => navigation.navigate('NoDrawerStack',{screen:'Details', params: { recipe: item },})}
-      toggleBookmark={() => toggleBookmark(item.id)}
-      isBookmarked={bookmarkedRecipes.includes(item.id)}
     />
   );
 
@@ -63,13 +60,17 @@ const HomeScreen = () => {
     <SafeAreaView style={styles.container}>
         <ScrollView>
       <Text style={styles.sectionTitle}>On Your Menu</Text>
+      {favoriteRecipes.length > 0 ? (
       <FlatList
         horizontal
-        data={savedRecipes}
+        data={favoriteRecipes}
         renderItem={renderSmallCard}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.id}
         showsHorizontalScrollIndicator={false}
       />
+      ) : (
+        <Text style={styles.emptyText}>You haven't favorited any recipes yet!</Text>
+      )}
       <Text style={styles.sectionTitle}>Recommended for You</Text>
       <FlatList
         horizontal

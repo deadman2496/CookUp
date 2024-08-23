@@ -1,11 +1,11 @@
 // In screens/RecipeDetailScreen.js
-import React, {useState } from 'react';
+import React, {useState, useContext } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, FlatList, Dimensions } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
 import { Rating } from 'react-native-ratings';
 import { TabView, SceneMap } from 'react-native-tab-view';
-
+import { useFavorite } from '../contexts/BookmarkContext';
 
 
 const RecipeDetailScreen = ({ route, navigation }) => {
@@ -13,6 +13,15 @@ const RecipeDetailScreen = ({ route, navigation }) => {
     const [saved, setSaved] = useState(false);
     const [index, setIndex] = useState(0);
     const [selectedFilters, setSelectedFilters] = useState({});
+    const { isFavorite, addFavorite, removeFavorite } = useFavorite();
+
+    const handleBookmarkToggle = () => {
+      if (isFavorite(recipe.id)) {
+        removeFavorite(recipe.id);
+      } else {
+        addFavorite(recipe);
+      }
+     };
 
     
     const [routes] = useState([
@@ -87,11 +96,11 @@ const RecipeDetailScreen = ({ route, navigation }) => {
           <Text style={styles.ratingCount}>({recipe.ratingCount} reviews)</Text>
         </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={toggleSave}>
+        <TouchableOpacity onPress={handleBookmarkToggle}>
           <Ionicons
-            name={saved ? 'bookmark' : 'bookmark-outline'}
+            name={isFavorite(recipe.id) ? 'bookmark' : 'bookmark-outline'}
             size={30}
-            color={saved ? 'red' : 'grey'}
+            color='green'
             style={styles.saveIcon}
           />
         </TouchableOpacity>
