@@ -17,3 +17,39 @@ export const extractFilters = (recipes) => {
         dietaryPreferences: Array.from(dietaryPreferences),
     };
 };
+
+export const mealTypes = [
+    'Breakfast',
+    'Lunch',
+    'Dinner',
+    'Dessert',
+    'Side Dish',
+    'Snack',
+];
+
+export const cuisines = [
+    'American',
+    'Italian',
+    'Mexican',
+    'Indian',
+    'Chinese',
+    'Thai',
+    'French',
+    'Japanese',
+    'Spanish',
+    'Greek',
+    'Middle Eastern',
+    'South American',
+];
+
+export const dietaryPreferences = [
+    'Vegan',
+    'Vegetarian',
+    'Pescatarian',
+    'Gluten Free',
+    'Nut Free',
+    'Lactose Intolerant',
+    'Low Sodium',
+    'Paleo',
+    'Keto',
+];
