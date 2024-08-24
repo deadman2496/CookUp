@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, TextInput, FlatList, Text, StyleSheet, TouchableOpacity, Button, ScrollView, Modal, CheckBox, Alert, Platform, KeyboardAvoidingView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
-import { recipes} from '../constants/recipeindex';
+import { recipes } from '../constants/recipeindex';
 import MediumRecipeCard from '../components/MediumRecipeCard';
 import { extractFilters } from '../utils/filters';
 
@@ -10,6 +10,11 @@ import { extractFilters } from '../utils/filters';
 const SearchScreen = ({ navigation }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilters, setSelectedFilters] = useState({
+    mealType: [],
+    cuisine: [],
+    dietaryPreferences: [],
+  });
+  const [modalFilters, setModalFilters] = useState({
     mealType: [],
     cuisine: [],
     dietaryPreferences: [],
@@ -36,37 +41,70 @@ const SearchScreen = ({ navigation }) => {
     return array.sort(() => Math.random() - 0.5);
 };
 
-  const handleSearch = () => {
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    filterRecipes(query, selectedFilters, modalFilters);
+   }
+
+  const filterRecipes = (query, selectedFilters, modalFilters) => {
     let filtered = recipes.filter((recipe) => {
-      const matchesSearchQuery = recipe.title.toLowerCase().includes(searchQuery.toLowerCase());
-      
-      const matchesMealType =
-      selectedFilters.mealType.length === 0 ||
-      selectedFilters.mealType.includes(recipe.mealType);
+        const matchesSearchQuery = recipe.title.toLowerCase().includes(query.toLowerCase());
 
-      const matchesCuisine = 
-        selectedFilters.cuisine.length === 0 ||
-        selectedFilters.cuisine.includes(recipe.cuisine);
+        const matchesSelectedMealType =
+            selectedFilters.mealType.length === 0 ||
+            selectedFilters.mealType.includes(recipe.mealType);
 
-      const matchesDietaryPreferences =
-          selectedFilters.dietaryPreferences.length === 0 ||
-          selectedFilters.dietaryPreferences.some((preference) =>
-            recipe.dietaryPreferences.includes(preference)
-          );
-      
-          return matchesSearchQuery && matchesMealType && matchesCuisine && matchesDietaryPreferences;    
+        const matchesSelectedCuisine =
+            selectedFilters.cuisine.length === 0 ||
+            selectedFilters.cuisine.includes(recipe.cuisine);
+
+        const matchesSelectedDietaryPreferences =
+            selectedFilters.dietaryPreferences.length === 0 ||
+            selectedFilters.dietaryPreferences.some((preference) =>
+                recipe.dietaryPreferences.includes(preference)
+            );
+        const matchesModalMealType =
+            modalFilters.mealType.length === 0 ||
+            modalFilters.mealType.includes(recipe.mealType);
+
+        const matchesModalCuisine =
+            modalFilters.cuisine.length === 0 ||
+            modalFilters.cuisine.includes(recipe.cuisine);
+
+        const matchesModalDietaryPreferences =
+            modalFilters.dietaryPreferences.length === 0 ||
+            modalFilters.dietaryPreferences.some((preference) =>
+                recipe.dietaryPreferences.includes(preference)
+            );
+
+        return matchesSearchQuery && matchesSelectedMealType && matchesSelectedCuisine && matchesSelectedDietaryPreferences
+        && matchesModalMealType && matchesModalCuisine && matchesModalDietaryPreferences;
     });
     setFilteredRecipes(filtered);
-   };
-
-   const handleFilterChange = (filterName, value) => {
+};
+  const handleHorizontalFilterChange = (filterName, value) => {
     setSelectedFilters((prevFilters) => {
+    const updatedFilters = prevFilters[filterName].includes(value)
+    ? prevFilters[filterName].filter((item) => item !== value)
+    : [...prevFilters[filterName], value];
+
+    filterRecipes(searchQuery, { ...selectedFilters, [filterName]: updatedFilters }, modalFilters);
+
+    return { ...selectedFilters, [filterName]: updatedFilters };
+    });
+  };
+
+   const handleModalFilterChange = (filterName, value) => {
+    setModalFilters((prevFilters) => {
       const updatedFilters = prevFilters[filterName].includes(value)
         ? prevFilters[filterName].filter((item) => item !== value)
         : [...prevFilters[filterName], value];
+
         return { ...prevFilters, [filterName]: updatedFilters };
     });
    };
+
+   
 
    const handleAddCustomFilter = () => {
     if (!customFilterValue.trim()){
@@ -88,6 +126,11 @@ const SearchScreen = ({ navigation }) => {
      setCustomFilterModalVisible(false);
 
      setMainModalVisible(true);
+   };
+
+   const applyModalFilters = () => {
+    filterRecipes(searchQuery, selectedFilters, modalFilters);
+    setMainModalVisible(false);
    };
 
    const openCustomFilterModal = (filterType) => {
@@ -135,10 +178,10 @@ const SearchScreen = ({ navigation }) => {
                         {filterOptions.mealTypes.map((mealType) => (
                             <TouchableOpacity 
                               key={mealType} 
-                              onPress={() => handleFilterChange('mealType', mealType)}
+                              onPress={() => handleModalFilterChange('mealType', mealType)}
                               style={[
                                 styles.filterButtonRound,
-                                selectedFilters.mealType.includes(mealType) && styles.selectedFilterRound,
+                                modalFilters.mealType.includes(mealType) && styles.selectedFilterRound,
                               ]}
                               >
                                 <Text style={styles.filterButtonTextRound}>
@@ -154,10 +197,10 @@ const SearchScreen = ({ navigation }) => {
                         {filterOptions.cuisines.map((cuisine) => (
                             <TouchableOpacity 
                               key={cuisine} 
-                              onPress={() => handleFilterChange('cuisine', cuisine)}
+                              onPress={() => handleModalFilterChange('cuisine', cuisine)}
                               style={[
                                 styles.filterButtonRound,
-                                selectedFilters.cuisine.includes(cuisine) && styles.selectedFilterRound,
+                                modalFilters.cuisine.includes(cuisine) && styles.selectedFilterRound,
                               ]}
                               >
                                 <Text style={styles.filterButtonTextRound}>
@@ -184,10 +227,10 @@ const SearchScreen = ({ navigation }) => {
                         {filterOptions.dietaryPreferences.map((preference) => (
                             <TouchableOpacity 
                               key={preference} 
-                              onPress={() => handleFilterChange('dietaryPreferences', preference)}
+                              onPress={() => handleModalFilterChange('dietaryPreferences', preference)}
                               style={[
                                 styles.filterButtonRound,
-                                selectedFilters.dietaryPreferences.includes(preference) && styles.selectedFilterRound,
+                                modalFilters.dietaryPreferences.includes(preference) && styles.selectedFilterRound,
                               ]}
                               >
                                 <Text style={styles.filterButtonTextRound}>
@@ -213,10 +256,11 @@ const SearchScreen = ({ navigation }) => {
                         {/* Apply Filters Button */}
                         <Button
                             title="Apply Filters"
-                            onPress={() => {
-                                handleSearch();
-                                setMainModalVisible(false);
-                            }}
+                            onPress={applyModalFilters}
+                        />
+                        <Button
+                          title='Close'
+                          onPress={() => setMainModalVisible(false)}
                         />
                     </View>
                 </View>
@@ -265,26 +309,47 @@ const SearchScreen = ({ navigation }) => {
               </KeyboardAvoidingView>
             </Modal>
 
-      {/* Filters */}
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} styles={styles.filterContainer}>
-        <TouchableOpacity onPress={() => handleFilterChange('mealType', 'Breakfast')}>
-            <Text style={selectedFilters.mealType === 'Breakfast' ? styles.selectedFilter : styles.filterOption}>Breakfast</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleFilterChange('mealType', 'Lunch')}>
-            <Text style={selectedFilters.mealType === 'Lunch' ? styles.selectedFilter : styles.filterOption}>Lunch</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleFilterChange('mealType', 'Dinner')}>
-            <Text style={selectedFilters.mealType === 'Dinner' ? styles.selectedFilter : styles.filterOption}>Dinner</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleFilterChange('mealType', 'Italian')}>
-            <Text style={selectedFilters.mealType === 'Italian' ? styles.selectedFilter : styles.filterOption}>Italian</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleFilterChange('mealType', 'Indian')}>
-            <Text style={selectedFilters.mealType === 'Indian' ? styles.selectedFilter : styles.filterOption}>Indian</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleFilterChange('mealType', 'Dessert')}>
-            <Text style={selectedFilters.mealType === 'Dessert' ? styles.selectedFilter : styles.filterOption}>Dessert</Text>
-        </TouchableOpacity>
+      {/* Horizontal Filters */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} styles={styles.filterScrollContainer}>
+        {/* Meal Type Filters */}
+        {filterOptions.mealTypes.map((mealType) => (
+          <TouchableOpacity
+            key={mealType}
+            onPress={() => handleHorizontalFilterChange('mealType', mealType)}
+            style={[
+              styles.filterButtonRound,
+              selectedFilters.mealType.includes(mealType) && styles.selectedFilterRound,
+             ]}
+          >
+            <Text style={styles.filterButtonTextRound}>{mealType}</Text>
+          </TouchableOpacity>
+        ))}
+        {/* Cuisine Filters */}
+        {filterOptions.mealTypes.map((cuisine) => (
+          <TouchableOpacity
+            key={cuisine}
+            onPress={() => handleHorizontalFilterChange('cuisine', cuisine)}
+            style={[
+              styles.filterButtonRound,
+              selectedFilters.cuisine.includes(cuisine) && styles.selectedFilterRound,
+             ]}
+          >
+            <Text style={styles.filterButtonTextRound}>{cuisine}</Text>
+          </TouchableOpacity>
+        ))}
+        {/* Dietary Preferences Filters */}
+        {filterOptions.mealTypes.map((preference) => (
+          <TouchableOpacity
+            key={preference}
+            onPress={() => handleHorizontalFilterChange('dietaryPreferences', preference)}
+            style={[
+              styles.filterButtonRound,
+              selectedFilters.mealType.includes(preference) && styles.selectedFilterRound,
+             ]}
+          >
+            <Text style={styles.filterButtonTextRound}>{preference}</Text>
+          </TouchableOpacity>
+        ))}
       </ScrollView>
 
       {/* Recipe list */}
@@ -315,6 +380,7 @@ const styles = StyleSheet.create({
    searchContainer:{
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 10,
    },
    searchBar: {
     flex: 1,
@@ -322,12 +388,13 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',  
     borderRadius: 5,
     padding: 10,
-    marginRight: 10,
+    marginRight: 5,
    },
    filterTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 15,
+    marginTop: 10,
+    marginBottom: 10,
     textAlign: 'center',
     },
    filterContainer: {
@@ -339,6 +406,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#ff6347',
     borderRadius: 5,
    },
+   filterScrollContainer: {
+    flexDirection: 'row',
+    marginBottom: 10,
+   },
    filterButtonText: {
     color: '#fff',
     textAlign: 'center',
@@ -347,6 +418,7 @@ const styles = StyleSheet.create({
    filterButtonRound: {
     backgroundColor: '#eee',
     borderRadius: 20,
+    height: 40,
     paddingHorizontal: 15,
     paddingVertical: 10,
     marginRight: 10,
