@@ -15,6 +15,7 @@ const SearchScreen = ({ navigation }) => {
     dietaryPreferences: [],
   });
   const [filteredRecipes, setFilteredRecipes] = useState([]);
+  const [mainModalVisible, setMainModalVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [customFilterModalVisible, setCustomFilterModalVisible] = useState(false);
   const [filterOptions, setFilterOptions] = useState({ mealTypes: [], cuisines: [], dietaryPreferences: [] });
@@ -85,10 +86,13 @@ const SearchScreen = ({ navigation }) => {
 
      setCustomFilterValue('');
      setCustomFilterModalVisible(false);
+
+     setMainModalVisible(true);
    };
 
    const openCustomFilterModal = (filterType) => {
       setCustomFilterType(filterType);
+      setMainModalVisible(false);
       setCustomFilterModalVisible(true);
    };
 
@@ -108,7 +112,7 @@ const SearchScreen = ({ navigation }) => {
       {/* Filter button */}
       <TouchableOpacity
         style={styles.filterButton}
-        onPress={() => setModalVisible(true)}
+        onPress={() => setMainModalVisible(true)}
       >
         <Text style={styles.filterButtonText}>Filters</Text>
       </TouchableOpacity>
@@ -118,8 +122,8 @@ const SearchScreen = ({ navigation }) => {
       <Modal
                 animationType="slide"
                 transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
+                visible={mainModalVisible}
+                onRequestClose={() => setMainModalVisible(false)}
             >
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
@@ -211,7 +215,7 @@ const SearchScreen = ({ navigation }) => {
                             title="Apply Filters"
                             onPress={() => {
                                 handleSearch();
-                                setModalVisible(false);
+                                setMainModalVisible(false);
                             }}
                         />
                     </View>
@@ -223,7 +227,10 @@ const SearchScreen = ({ navigation }) => {
               animationType='slide'
               transparent={true}
               visible={customFilterModalVisible}
-              onRequestClose={() => setCustomFilterModalVisible(false)}
+              onRequestClose={() => {
+                setCustomFilterModalVisible(false);
+                setMainModalVisible(true); //re-opens the main modal used for iOS 
+              }}
             >
               <KeyboardAvoidingView 
                 style={styles.modalContainer}
@@ -246,7 +253,10 @@ const SearchScreen = ({ navigation }) => {
                     </TouchableOpacity>
                     <TouchableOpacity 
                       style={[styles.customButton, styles.cancelButton]}
-                      onPress={() => setCustomFilterModalVisible(false)}
+                      onPress={() => { 
+                        setCustomFilterModalVisible(false);
+                        setMainModalVisible(true);
+                      }}
                     >
                       <Text style={styles.customButtonText}>Cancel</Text>
                     </TouchableOpacity>
