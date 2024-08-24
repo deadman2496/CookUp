@@ -128,14 +128,14 @@ const RecipeDetailScreen = ({ route, navigation }) => {
       </View> */}
       <View style={styles.filtersContainer}>
         <View style={styles.filterTag}>
-          <Text style={styles.filterText}>{recipe.filters.mealType}</Text>
+          <Text style={styles.filterText}>{recipe.mealType}</Text>
         </View>
         <View style={styles.filterTag}>
-          <Text style={styles.filterText}>{recipe.filters.cuisine}</Text>
+          <Text style={styles.filterText}>{recipe.cuisine}</Text>
         </View><View style={styles.filterTag}>
-          <Text style={styles.filterText}>{recipe.filters.dietaryPreferences}</Text>
+          <Text style={styles.filterText}>{recipe.dietaryPreferences}</Text>
         </View><View style={styles.filterTag}>
-          <Text style={styles.filterText}>{recipe.filters.averageCost}</Text>
+          <Text style={styles.filterText}>{recipe.averageCost}</Text>
         </View>
       </View>
 

@@ -38,13 +38,13 @@ const LargeRecipeCard = ({ item, onPress}) => {
                 <Text style={styles.largeTitle}>{item.title}</Text>
                 <View style={styles.filtersContainer}>
                     <View style={styles.filterTag}>
-                        <Text style={styles.filterText}>{item.filters.cuisine}</Text>
+                        <Text style={styles.filterText}>{item.cuisine}</Text>
                     </View>
                     <View style={styles.filterTag}>
-                        <Text style={styles.filterText}>{item.filters.dietaryPreferences}</Text>
+                        <Text style={styles.filterText}>{item.dietaryPreferences}</Text>
                     </View>
                     <View style={styles.filterTag}>
-                        <Text style={styles.filterText}>{item.filters.averageCost}</Text>
+                        <Text style={styles.filterText}>{item.averageCost}</Text>
                     </View>
                 </View>
                 

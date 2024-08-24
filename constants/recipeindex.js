@@ -7,6 +7,8 @@ import CaesarSalad from '../assets/images/Caesar_Salad.png';
 import PoundCake from '../assets/images/Traditional_Pound_Cake.png';
 import SpanishFlan from '../assets/images/Spanish_Flan.png';
 import ChickenTeriyaki from '../assets/images/Chicken_Teriyaki.png';
+import { extractFilters } from "../utils/filters";
+
 
 const recipes = [
     {   id: '1', 
@@ -47,7 +49,12 @@ const recipes = [
             {userName: 'Jane Doe', text: 'This is a review of the recipe.', rating: 4,},
             {userName: 'Jane Doe', text: 'This is a review of the recipe.', rating: 4,},
         ],
-        filters: {mealType: 'Dessert' , cuisine: 'American', dietaryPreferences: ['Gluten Free'], averageCost:'$'}, creator: 'amarroquin' }, 
+        mealType: 'Dessert' , 
+        cuisine: 'American', 
+        dietaryPreferences: ['Gluten Free'], 
+        averageCost:'$', 
+        creator: 'amarroquin' 
+    }, 
     {   id: '2', 
         title:'Spanish Flan', 
         description: 'Sweet Flan', 
@@ -79,7 +86,12 @@ const recipes = [
             {userName: 'Jane Doe', text: 'This is a review of the recipe.', rating: 4,},
             {userName: 'Jane Doe', text: 'This is a review of the recipe.', rating: 4,},
         ],
-        filters: {mealType: 'Dessert' , cuisine: 'Spanish', dietaryPreferences: ['lactose intolerant'], averageCost:'$$'}, creator: 'Jane doe' },
+        mealType: 'Dessert' , 
+        cuisine: 'Spanish', 
+        dietaryPreferences: ['lactose intolerant'], 
+        averageCost:'$$', 
+        creator: 'Jane doe' 
+    },
     {   id: '3', 
         title:'Chicken Teriyaki', 
         description: 'Savory Teriyaki', 
@@ -127,7 +139,12 @@ const recipes = [
             {userName: 'Jane Doe', text: 'This is a review of the recipe.', rating: 4,},
             {userName: 'Jane Doe', text: 'This is a review of the recipe.', rating: 4,},
         ],
-        filters: {mealType: 'Dinner' , cuisine: 'Japanese', dietaryPreferences: ['nut free'], averageCost:'$$'}, creator: 'John doe' },
+        mealType: 'Dinner' , 
+        cuisine: 'Japanese', 
+        dietaryPreferences: ['nut free'], 
+        averageCost:'$$', 
+        creator: 'John doe' 
+    },
     {   id: '4', 
         title: 'Chocolate Cake', 
         description: 'Delicious dark cocolate cake', 
@@ -176,7 +193,11 @@ const recipes = [
             {userName: 'Jane Doe', text: 'This is a review of the recipe.', rating: 4,},
             {userName: 'Jane Doe', text: 'This is a review of the recipe.', rating: 4,},
         ],
-        filters: {mealType: 'Dessert' , cuisine: 'French', dietaryPreferences: ['Gluten Free'], averageCost:'$$$'}, creator: 'amarroquin' }, 
+        mealType: 'Dessert' , 
+        cuisine: 'French', 
+        dietaryPreferences: ['Gluten Free'], 
+        averageCost:'$$$', 
+        creator: 'amarroquin' }, 
     {   id: '5', 
         title: 'Pasta Carbonara', 
         description: 'Creamy and comforting pasta dish', 
@@ -216,7 +237,11 @@ const recipes = [
             {userName: 'Jane Doe', text: 'This is a review of the recipe.', rating: 4,},
             {userName: 'Jane Doe', text: 'This is a review of the recipe.', rating: 4,},
         ],
-        filters: {mealType: 'Dinner' , cuisine: 'Italian', dietaryPreferences: ['Vegan'], averageCost:'$'}, creator: 'Jane doe' },
+        mealType: 'Dinner' , 
+        cuisine: 'Italian', 
+        dietaryPreferences: ['Vegan'], 
+        averageCost:'$', 
+        creator: 'Jane doe' },
     {   id: '6', 
         title: 'Cheese Pizza', 
         description: 'Classic cheese and tomato pizza.', 
@@ -251,7 +276,12 @@ const recipes = [
             {userName: 'Jane Doe', text: 'This is a review of the recipe.', rating: 4,},
             {userName: 'Jane Doe', text: 'This is a review of the recipe.', rating: 4,},
         ],
-        filters: {mealType: 'Lunch' , cuisine: 'Italian', dietaryPreferences: ['lactose inolerant'], averageCost:'$$$'}, creator: 'John doe' },
+        mealType: 'Lunch' , 
+        cuisine: 'Italian', 
+        dietaryPreferences: ['lactose inolerant'], 
+        averageCost:'$$$', 
+        creator: 'John doe' 
+    },
     {   id: '7', 
         title: 'Caesar Salad', 
         description: 'Fresh romaine lettuce with Caesar dressing.', 
@@ -290,7 +320,12 @@ const recipes = [
             {userName: 'Jane Doe', text: 'This is a review of the recipe.', rating: 4,},
             {userName: 'Jane Doe', text: 'This is a review of the recipe.', rating: 4,},
         ],
-        filters: {mealType: 'side dish' , cuisine: 'greek', dietaryPreferences: ['Vegan'], averageCost:'$'}, creator: 'amarroquin' },
+        mealType: 'side dish' , 
+        cuisine: 'greek', 
+        dietaryPreferences: ['Vegan'], 
+        averageCost:'$', 
+        creator: 'amarroquin' 
+    },
     {   id: '8', 
         title: 'Pound Cake', 
         description: 'feels like the name', 
@@ -323,7 +358,12 @@ const recipes = [
             {userName: 'Jane Doe', text: 'This is a review of the recipe.', rating: 4,},
             {userName: 'Jane Doe', text: 'This is a review of the recipe.', rating: 4,},
         ],
-        filters: {mealType: 'Dessert' , cuisine: 'South American', dietaryPreferences: ['nut free'], averageCost:'$$$'}, creator: 'Jane doe' },
+        mealType: 'Dessert' , 
+        cuisine: 'South American', 
+        dietaryPreferences: ['nut free'], 
+        averageCost:'$$$', 
+        creator: 'Jane doe',
+    },
 ];
 
 const featuredRecipes = [
@@ -525,4 +565,6 @@ const featuredRecipes = [
         filters: {mealType: 'Dessert' , cuisine: 'South American', dietaryPreferences: ['nut free'], averageCost:'$$$'}, creator: 'Jane doe' },
 ];
 
-export { recipes, featuredRecipes };
+export const filters = extractFilters(recipes);
+
+export { recipes, featuredRecipes};

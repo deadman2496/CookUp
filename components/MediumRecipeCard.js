@@ -37,10 +37,10 @@ const MediumRecipeCard = ({ item, onPress }) => {
                 <Text style={styles.mediumTitle}>{item.title}</Text>
                 <View style={styles.filtersContainer}>
                     <View style={styles.filterTag}>
-                        <Text style={styles.filterText}>{item.filters.mealType}</Text>
+                        <Text style={styles.filterText}>{item.mealType}</Text>
                     </View>
                     <View style={styles.filterTag}>
-                        <Text style={styles.filterText}>{item.filters.cuisine}</Text>
+                        <Text style={styles.filterText}>{item.cuisine}</Text>
                     </View>
                 </View>
                 <Text style={styles.creator}>Created by: {item.creator}</Text>
