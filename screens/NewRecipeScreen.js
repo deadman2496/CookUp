@@ -3,8 +3,10 @@ import { View, TextInput, Button, Text, StyleSheet, TouchableOpacity, ScrollView
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { mealTypes, cuisines, dietaryPreferences } from '../utils/filters';
+import { useRecipes } from '../contexts/RecipeContext';
 
-const NewRecipeScreen = () => {
+const NewRecipeScreen = ({navigation}) => {
+  const { addNewRecipe } = useRecipes(); // Access to addNewRecipe from RecipeContext
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [servingSize, setServingSize] = useState(1);
@@ -12,6 +14,25 @@ const NewRecipeScreen = () => {
   const [selectedFilters, setSelectedFilters] = useState({ mealType: [], cuisine: [], dietaryPreferences: [] });
   const [images, setImages] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
+  const [errorMessages, setErrorMessages] = useState([]);
+
+  const validateFields = () => {
+    const errors= [];
+
+    if(!title.trim()) errors.push('Title is required');
+    if(!description.trim()) errors.push('Description is required');
+    if(!servingSize || servingSize < 1) errors.push('Serving size must be greater than 0');
+
+    const incompleteIngredients = ingredients.some(i => !i.name.trim() || !i.quantity.trim() || !i.unit.trim());
+    if (incompleteIngredients) errors.push('Ingredients must have name, quantity, and unit');
+
+    if (!selectedFilters.mealType) errors.push('Meal Type is required');
+    if (!selectedFilters.cuisine) errors.push('Cuisine is required');
+    if (!selectedFilters.dietaryPreferences) errors.push('Dietary Preferences is required');  
+    if (images.length < 1) errors.push('At least one image is required');
+
+    return errors;
+  }
 
   const addIngredient = () => {
     setIngredients([...ingredients, { name: '', quantity: '', unit : '' }]);
@@ -74,20 +95,30 @@ const NewRecipeScreen = () => {
     };
 
     const handleSubmit =() => {
-      if (!title || !description || !servingSize || !ingredients.some(i => !i.name || !i.quantity || !i.unit)) {
-        Alert.alert('Error','Please fill out all fields');
+
+      const errors = validateFields();
+      if (errors.length > 0) {
+        setErrorMessages(errors);
         return;
       }
+
+      const combinedIngredients = ingredients.map(ingredient =>
+        `${ingredient.quantity} ${ingredient.unit} ${ingredient.name}`
+      );
+      
       const newRecipe = {
         title,
         description,
         servingSize,
-        ingredients,
+        ingredients: combinedIngredients,
         filters: selectedFilters,
         images,
       };
+
+      addNewRecipe(newRecipe); // adds new recipe to the RecipeContext and RecipeIndex
       console.log(newRecipe);
       Alert.alert('Success','Recipe added successfully!');
+      navigation.navigate('Home'); //if successful, navigates to Home screen
     }
 
     const renderImageGrid = () => {
@@ -254,6 +285,19 @@ const NewRecipeScreen = () => {
       {/* <Button title="Pick an image from camera roll" onPress={pickImage} />
       {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />} */}
 
+      {errorMessages.length > 0 && (
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorTitle}>
+            Please fill out the following fields:
+          </Text>
+          {errorMessages.map((message, index) => (
+            <Text key={index} style={styles.errorMessage}>
+              {message}
+            </Text>
+          ))}
+        </View>
+      )}
+
       <Button title="Submit Recipe" onPress={handleSubmit} />
     </ScrollView>
   );
@@ -401,10 +445,31 @@ const styles = StyleSheet.create({
     marginRight: 10,
     marginBottom: 10,
    },
+   selectedFilterButton: {
+    backgroundColor: '#FF6347',
+   },
+   filterCategory: {
+    fontSize: 16,
+    marginVertical: 10,
+   },
    image: {
     width: '100%',
     height: 200,
     marginTop: 20,
     borderRadius: 10,
    },
+   errorContainer: {
+    backgroundColor: '#ffe6e6',
+    padding: 10,
+    marginBottom: 20,
+    borderRadius: 5,
+   },
+   errorTitle: {
+    color: '#d9534f',
+    fontWeight: 'bold',
+    marginBottom: 5,
+   },
+    errorMessage: {
+      color: '#d9534f',
+    },
  });

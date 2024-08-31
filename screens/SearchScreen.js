@@ -5,6 +5,7 @@ import { Picker } from '@react-native-picker/picker';
 import { recipes } from '../constants/recipeindex';
 import MediumRecipeCard from '../components/MediumRecipeCard';
 import { extractFilters } from '../utils/filters';
+import { useRecipes } from '../contexts/RecipeContext';
 
 
 const SearchScreen = ({ navigation }) => {

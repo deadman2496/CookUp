@@ -1,9 +1,9 @@
 // App.js
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import { createStackNavigator } from '@react-navigation/stack';
+import { createStackNavigator, CardStyleInterpolators } from '@react-navigation/stack';
 import { FavoriteRecipesProvider } from './contexts/BookmarkContext';
 import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from './screens/HomeScreen';
@@ -15,16 +15,67 @@ import RecipeBoxScreen from './screens/RecipeBoxScreen';
 import NewRecipeScreen from './screens/NewRecipeScreen';
 import GroceryListScreen from './screens/GroceryListScreen';
 import ReviewPage from './screens/ReviewPage';
-//import LoginPage from './screens/LoginPage';
+import SignInScreen from '../RecipeApp/(auth)/sign-in';
 //import SignUpPage from './screens/SignUpPage';
 import { Button, View} from 'react-native';
 import SearchScreen from './screens/SearchScreen';
 import RecipeDetailScreen from './screens/RecipeDetailScreen';
 import { AuthContext, AuthProvider } from './contexts/AuthContext';
+import { RecipeProvider } from './contexts/RecipeContext';
+//import { account } from './appwriteConfig';
+import { checkAuth, signOutUser } from './utils/auth';
+import StepOne from './(auth)/sign-up/StepOne';
+import StepTwo from './(auth)/sign-up/StepTwo';
+import StepThree from './(auth)/sign-up/StepThree';
+import StepFour from './(auth)/sign-up/StepFour';
+import OnboardingStepOne from './screens/OnboardingScreen/IntroductionScreen';
+import OnboardingStepTwo from './screens/OnboardingScreen/ServingSizeSelectionScreen';
+import OnboardingStepThree from './screens/OnboardingScreen/RadioSelectionScreen';
+import OnboardingStepFour from './screens/OnboardingScreen/DietaryRestrictionsScreen';
+import OnboardingStepFive from './screens/OnboardingScreen/AllergiesScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import WelcomeScreen from './(auth)/sign-up/StepZero';
+import { useFonts } from 'expo-font';
+import FontLoader from './utils/FontLoader';
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 const Stack = createStackNavigator();
+
+export function SignUp() {
+  return (
+        <Stack.Navigator
+           screenOptions={{
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS, // Customize sliding animation
+        }} 
+          initialRouteName="Welcome"
+          >
+          <Stack.Screen name="Welcome" component={WelcomeScreen} options={{ headerShown: false}} />
+          <Stack.Screen name="StepOne" component={StepOne} options={{ headerShown: false}}/>
+          <Stack.Screen name="StepTwo" component={StepTwo} options={{ headerShown: false}} />
+          <Stack.Screen name="StepThree" component={StepThree} options={{ headerShown: false}} />
+          <Stack.Screen name="StepFour" component={StepFour} options={{ headerShown: false}} />
+        </Stack.Navigator>
+  )
+};
+
+export function Onboard() {
+  return (
+        <Stack.Navigator 
+          screenOptions={{
+            cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+          }}
+          initialRouteName="SignUp">
+                <Stack.Screen name="SignUp" component={SignUp} options={{ title: 'Sign Up' }} />
+                <Stack.Screen name="OnboardingStepOne" component={OnboardingStepOne} options={{ title: 'Welcome' }} />
+                <Stack.Screen name="OnboardingStepTwo" component={OnboardingStepTwo} options={{ title: 'Serving Size' }} />
+                <Stack.Screen name="OnboardingStepThree" component={OnboardingStepThree} options={{ title: 'Options' }} />
+                <Stack.Screen name="OnboardingStepFour" component={OnboardingStepFour} options={{ title: 'Dietary Restrictions' }} />
+                <Stack.Screen name="OnboardingStepFive" component={OnboardingStepFive} options={{ title: 'Food Allergies' }} />
+                <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Home' }} />
+            </Stack.Navigator>
+  )
+}
 
 function TabNavigator() {
   return (
@@ -48,38 +99,50 @@ function TabNavigator() {
     tabBarActiveTintColor: '#ff6347',
     tabBarInactiveTintColor: 'gray',
   })}>
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Recipe Box" component={RecipeBoxScreen} />
-      <Tab.Screen name="New Recipe" component={NewRecipeScreen} />
-      <Tab.Screen name="Search" component={SearchScreen} />
-      <Tab.Screen name="Grocery List" component={GroceryListScreen} />
+      <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false}}/>
+      <Tab.Screen name="Recipe Box" component={RecipeBoxScreen} options={{ headerShown: false}}/>
+      <Tab.Screen name="New Recipe" component={NewRecipeScreen} options={{ headerShown: false}}/>
+      <Tab.Screen name="Search" component={SearchScreen} options={{ headerShown: false}}/>
+      <Tab.Screen name="Grocery List" component={GroceryListScreen} options={{ headerShown: false}}/>
     </Tab.Navigator>
   );
 }
 
-function MainNavigator() {
-  const { isAuthenticated } = useContext(AuthContext);
+// function Navigation() {
+//   const { isAuthenticated, setIsAuthenticated } = useState(false);
+//   const {loading, setLoading} = useState(true);
 
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false}}>
-      {!isAuthenticated ? (
-        <>
-          <Stack.Screen name="Login" component={LoginPage} />
-          <Stack.Screen name="SignUp" component={SignUpPage} />
-        </>
-      ) : (
-        <Stack.Screen name="Tabs" component={TabNavigator} />
-      )}
-    </Stack.Navigator>
-  );
-}
+//   useEffect(() => {
+//     const checkSession = async () => {
+//       try {
+//         const session = await account.getSession('current');
+//         setIsAuthenticated(!!session); //if the system confirms the user has a session on the device already the user automatically logs in
+//       } catch {
+//         setIsAuthenticated(false);
+//       }
+//       setLoading(false);
+//     };
+
+//     checkSession();
+//   }, []);
+
+//   if (loading){
+//     return null;
+//   }
+
+
+// }
 
 const Logout = ({navigation}) => {
-  const handleLogout = () => {
-    //TODO: Logout logic here
-    alert('Logged out Successfully');
-    //TODO: Redirect to login screen
-    navigation.replace('Login');
+  const handleLogout = async () => {
+    try{
+      await signOutUser();
+      setIsAuthenticated(false);
+      alert('Logged out Successfully');
+      navigation.replace('SignIn');
+    } catch (error) {
+      console.error('Error signing out:', error)
+    }
    };
 
    return (
@@ -104,18 +167,58 @@ const Logout = ({navigation}) => {
  function DrawerNavigator() {
   return (
     <Drawer.Navigator initialRouteName='Home'>
-      <Drawer.Screen name="Home" component={TabNavigator} />
-      <Drawer.Screen name="Profile" component={ProfileScreen} />
-      <Drawer.Screen name="Settings" component={SettingsScreen} />
-      <Drawer.Screen name="Your Menus" component={YourMenusPage} />
-      <Drawer.Screen name="Dietary Restrictions" component={DietaryRestrictionsPage} />
+      <Drawer.Screen name="Home" component={TabNavigator} options={{ headerShown: false}}/>
+      <Drawer.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false}}/>
+      <Drawer.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false}}/>
+      <Drawer.Screen name="Your Menus" component={YourMenusPage} options={{ headerShown: false}}/>
+      <Drawer.Screen name="Dietary Restrictions" component={DietaryRestrictionsPage} options={{ headerShown: false}} />
       <Drawer.Screen name="Logout" component={Logout} />
     </Drawer.Navigator>
    );
  }
 
 export default function App() {
+  const [isAuthenticated, setIsAuthenticated ] = useState(false);
+  const [loading, setLoading ] = useState(true);
+  const [isFirstTime, setIsFirstTime] = useState(true);
+
+
+  useEffect(() => {
+    const initializeAuth = async () => {
+      const firstTime = await AsyncStorage.getItem('isFirstTime');
+      if (firstTime === null) {
+        setIsFirstTime(true);
+        await AsyncStorage.setItem('isFirstTime', 'false');
+      } else {
+        setIsFirstTime(false);
+      }
+
+      const authStatus = await checkAuth();
+      setIsAuthenticated(authStatus);
+      setLoading(false);
+    };
+
+    initializeAuth();
+  }, []);
+
+  if (loading){
+    return null;
+  }
+
+  
+  const AuthNavigator = () => (
+    <Stack.Navigator initialRouteName={isFirstTime ? "SignUp" : "SignIn"}>
+      <Stack.Screen name='SignIn' component={SignInScreen} options={{ headerShown: false}} />
+      <Stack.Screen name='SignUp' component={SignUp} options={{ headerShown: false}}/>
+      <Stack.Screen name='Onboard' component={Onboard} options={{ headerShown: false}}/>
+    </Stack.Navigator>
+  );
+
   return (
+    <NavigationContainer>
+      {isAuthenticated ? (
+      
+    <RecipeProvider>
     <FavoriteRecipesProvider>
     <NavigationContainer>
       <Stack.Navigator>
@@ -127,5 +230,13 @@ export default function App() {
             </Stack.Navigator>
     </NavigationContainer>
     </FavoriteRecipesProvider>
+    </RecipeProvider>
+    ) : (
+      <AuthNavigator isFirstTime={isFirstTime}/>
+    )}
+    </NavigationContainer>
   );
+
+
+
 };

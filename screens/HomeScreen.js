@@ -1,5 +1,5 @@
 // In screens/HomeScreen.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Rating } from 'react-native-ratings';
@@ -9,11 +9,32 @@ import SmallRecipeCard from '../components/SmallRecipeCard';
 import MediumRecipeCard from '../components/MediumRecipeCard';
 import LargeRecipeCard from '../components/LargeRecipeCard';
 import { useFavorite } from '../contexts/BookmarkContext';
+import { useRecipes } from '../contexts/RecipeContext';
+import axios from 'axios';
+import { getRecipes } from '../api';
+
 
 const HomeScreen = () => {
   const navigation = useNavigation();
   // const [bookmarkedRecipes, setBookmarkedRecipes] = useState([]);
   const { favoriteRecipes } = useFavorite(); 
+  const { recipes } = useRecipes();
+  const {setRecipes} = useState([]);
+
+  useEffect(() => {
+   const fetchRecipes = async () => {
+    try {
+      const data = await getRecipes();
+      setRecipes(data);
+    } catch (error){
+
+      console.error('Failed to fetch recipes', error);
+    };
+   };
+   
+   fetchRecipes();
+  }, []);
+
 
 
   // const savedRecipes = recipes.filter(recipe => bookmarkedRecipes.includes(recipe.id));
@@ -78,7 +99,7 @@ const HomeScreen = () => {
         renderItem={renderMediumCard}
         keyExtractor={item => item.id}
         showsHorizontalScrollIndicator={false}
-      />
+     />
       <Text style={styles.sectionTitle}>Your Feed</Text>
       <FlatList
         data={latestRecipes}
