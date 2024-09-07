@@ -10,45 +10,50 @@ import MediumRecipeCard from '../components/MediumRecipeCard';
 import LargeRecipeCard from '../components/LargeRecipeCard';
 import { useFavorite } from '../contexts/BookmarkContext';
 import { useRecipes } from '../contexts/RecipeContext';
+import { getAllRecipes } from '../utils/RecipeCaller';
 import axios from 'axios';
 import { getRecipes } from '../api';
 
 
 const HomeScreen = () => {
   const navigation = useNavigation();
-  // const [bookmarkedRecipes, setBookmarkedRecipes] = useState([]);
   const { favoriteRecipes } = useFavorite(); 
-  const { recipes } = useRecipes();
-  const {setRecipes} = useState([]);
+  
+    // vvvv These variables are for the local Recipes. mostly for debugging.  vvvvvv
+    //  const { recipes } = useRecipes();
+    // const {setRecipes} = useState([]);
+  
+    //This one is for use to call upon back-end programs 
+  const [recipes, setRecipes ] = useState([]);
 
-  useEffect(() => {
-   const fetchRecipes = async () => {
-    try {
-      const data = await getRecipes();
-      setRecipes(data);
-    } catch (error){
+  // vvvvv These Variables go with the fetch recipes for use with the local Recipe Index. and Recipe Context. vvvv
+  // useEffect(() => {
+  //  const fetchRecipes = async () => {
+  //   try {
+  //     const data = await getRecipes();
+  //     setRecipes(data);
+  //   } catch (error){
 
-      console.error('Failed to fetch recipes', error);
-    };
-   };
+  //     console.error('Failed to fetch recipes', error);
+  //   };
+  //  };
    
-   fetchRecipes();
-  }, []);
+  //  fetchRecipes();
+  // }, []);
 
+    // vvvv This Variable calls upon the Recipes from the Back End server. vvvv
+    useEffect(() => {
+      async function fetchRecipes() {
+        const fetchedRecipes = await getAllRecipes();
+        setRecipes(fetchedRecipes);
+      }
+      fetchRecipes();
+    }, []);
 
-
-  // const savedRecipes = recipes.filter(recipe => bookmarkedRecipes.includes(recipe.id));
   const recommendedRecipes = recipes.slice(0,5);
   const latestRecipes= recipes.slice(5,10); 
 
-  // const toggleBookmark = (id) => {
-  //   if (bookmarkedRecipes.includes(id)) {
-  //     setBookmarkedRecipes(bookmarkedRecipes.filter(recipeId => recipeId !== id));
-  //   } else {
-  //     setBookmarkedRecipes([...bookmarkedRecipes, id]);
-  //   }
-  //  };
-
+    // This Part calls upon the different sized Recipe Cards and places them within their designated zones.
    const renderSmallCard = ({ item }) => (
       <SmallRecipeCard 
         item={item}
@@ -69,13 +74,6 @@ const HomeScreen = () => {
       onPress={() => navigation.navigate('NoDrawerStack',{screen:'Details', params: { recipe: item },})}
     />
   );
-
-   const VertiRecipeCard = ({ title, description, onPress}) => (
-     <TouchableOpacity style={styles.card} onPress={onPress}>
-       <Text style={styles.title}>{title}</Text>
-       <Text style={styles.description}>{description}</Text>
-     </TouchableOpacity>
-   );
 
    return (
     <SafeAreaView style={styles.container}>
@@ -119,46 +117,6 @@ const styles = StyleSheet.create({
     horizontalList: {
         flexGrow: 0, // Prevents the FlatList from wanting to fill the height of the ScrollView
       },
-    // card: {
-    //   backgroundColor: 'white',
-    //   borderRadius: 8,
-    //   padding: 20,
-    //   marginVertical: 8,
-    //   elevation: 3, // Shadow for Android
-    //   shadowColor: '#000', // Shadow for iOS
-    //   shadowOffset: { width: 0, height: 2 },
-    //   shadowOpacity: 0.1,
-    //   shadowRadius: 2,
-    //   flexDirection: 'row',
-    //     alignItems: 'center',
-    // },
-    // horizontalCard: {
-    //     backgroundColor: 'white',
-    //     borderRadius: 8,
-    //     padding: 20,
-    //     margin: 8,
-    //     width: 200, // Set a fixed width for horizontal cards
-    //     elevation: 3,
-    //     shadowColor: '#000',
-    //     shadowOffset: { width: 0, height: 2 },
-    //     shadowOpacity: 0.1,
-    //     shadowRadius: 2,
-    //     flexDirection: 'column',
-    //     alignItems: 'center',
-    //   },
-    //   cardImage: {
-    //     width: 100, // Fixed width for image
-    //     height: 100, // Fixed height for image
-    //     marginRight: 10, // Margin right for spacing between image and text
-    //   },
-    // cardTitle: {
-    //   fontSize: 18,
-    //   fontWeight: 'bold',
-    // },
-    // cardDescription: {
-    //   fontSize: 14,
-    //   color: '#666',
-    // },
     sectionTitle: {
         fontSize: 20,
         fontWeight: 'bold',

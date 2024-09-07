@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { View, TextInput, FlatList, Text, StyleSheet, TouchableOpacity, Button, ScrollView, Modal, CheckBox, Alert, Platform, KeyboardAvoidingView } from 'react-native';
+import { View, TextInput, FlatList, Text, StyleSheet, TouchableOpacity, Button, ScrollView, Modal, CheckBox, Alert, Platform, KeyboardAvoidingView, SafeAreaView } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
 import { recipes } from '../constants/recipeindex';
 import MediumRecipeCard from '../components/MediumRecipeCard';
 import { extractFilters } from '../utils/filters';
 import { useRecipes } from '../contexts/RecipeContext';
+import { getAllRecipes } from '../utils/RecipeCaller';
 
 
 const SearchScreen = ({ navigation }) => {
@@ -32,9 +33,17 @@ const SearchScreen = ({ navigation }) => {
   const [customFilterType, setCustomFilterType] = useState('');
   const [customFilterValue, setCustomFilterValue] = useState('');
 
+  // useEffect(() => {
+  //   setFilteredRecipes(shuffleArray(recipes));
+  //   setFilterOptions(extractFilters(recipes));
+  // }, []);
+
   useEffect(() => {
-    setFilteredRecipes(shuffleArray(recipes));
-    setFilterOptions(extractFilters(recipes));
+    async function fetchRecipes() {
+      const allRecipes = await getAllRecipes();
+      setFilteredRecipes(allRecipes);
+    }
+    fetchRecipes();
   }, []);
 
 
@@ -141,7 +150,7 @@ const SearchScreen = ({ navigation }) => {
    };
 
    return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
 
       <View style={styles.searchContainer}>
       {/* Search bar */}
@@ -365,7 +374,7 @@ const SearchScreen = ({ navigation }) => {
         )}
         numColumns={2}
       />
-    </View>
+    </SafeAreaView>
    )
 
 } ;

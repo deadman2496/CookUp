@@ -2,10 +2,24 @@ import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Text, SafeAreaView, KeyboardAvoidingView, Platform, TouchableOpacity, ScrollView } from 'react-native';
 import ProgressIndicator from '../../components/ProgressIndicator';
 import CustomHeader from '../../components/CustomHeader';
+import FontLoader from '../../utils/FontLoader';
 
 const StepOne = ({ navigation }) => {
     const [firstName, setFirstName ] = useState('');
     const [lastName, setLastName] = useState('');
+    const [step, setStep] = useState(0);
+    const fontsLoaded = FontLoader();
+
+    constSteps = 4;
+
+
+    if (!fontsLoaded){
+        return (
+            <View>
+                <ActivityIndicator size="large" color="#0000ff" />
+            </View>
+        );
+    }
 
     const handleNext = () => {
         navigation.navigate('StepTwo', { firstName, lastName });
@@ -62,15 +76,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     title: {
-        //fontFamily: 'Poppins-SemiBold, Arial',
-        fontSize: '34',
+        fontFamily: 'Poppins-SemiBold, Arial',
+        fontSize: 34,
         color:'#4f753e',
         marginBottom: 15,
         marginTop: 15,
     },
     message: {
-        //fontFamily: 'Poppins-SemiBold, Arial',
-        fontSize: '20',
+        fontFamily: 'Poppins-SemiBold, Arial',
+        fontSize: 20,
         color:'#4f753e',
     },
     titleContainer:{
@@ -96,7 +110,7 @@ const styles = StyleSheet.create({
     buttonText: {
         color: '#fff',
         fontSize: 16,
-        // fontFamily: 'Poppins-SemiBold, Arial',
+        fontFamily: 'Poppins-SemiBold, Arial',
     },
 });
 

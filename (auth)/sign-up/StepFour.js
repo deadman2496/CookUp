@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, StyleSheet, Text, SafeAreaView, KeyboardAvoidingView, Platform, TouchableOpacity, ScrollView } from 'react-native';
+import { View, TextInput, Button, StyleSheet, Text, SafeAreaView, KeyboardAvoidingView, Platform, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { signUpUser } from '../../utils/auth'; 
 import ProgressIndicator from '../../components/ProgressIndicator';
-import { createUser } from '../../lib/appwrite';
+import { createUser, sendVerificationEmail } from '../../lib/appwrite';
 import CustomHeader from '../../components/CustomHeader';
 
 const StepFour = ({ navigation, route }) => {
@@ -18,12 +18,12 @@ const StepFour = ({ navigation, route }) => {
         }
 
         try {
-            await signUpUser(email, password, { firstName, lastName, phoneNumber, username });
-            createUser();
+            const user = await createUser(email, password, username, firstName, lastName, phoneNumber);
+            //await sendVerificationEmail('');
             Alert.alert('Success', 'Account created successfully!');
-            navigation.navigate('OnboardingStepOne'); // Redirect to Sign In after successful sign-up
+            navigation.navigate('Onboard'); // Redirect to Sign In after successful sign-up
         } catch (error) {
-            Alert.alert('Error', error.message);
+            Alert.alert('Sign-Up Error:', error.message);
         }
     };
 
@@ -88,15 +88,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     title: {
-        //fontFamily: 'Poppins-SemiBold, Arial',
-        fontSize: '34',
+        fontFamily: 'Poppins-SemiBold, Arial',
+        fontSize: 34,
         color:'#4f753e',
         marginBottom: 15,
         marginTop: 15,
     },
     message: {
-        //fontFamily: 'Poppins-SemiBold, Arial',
-        fontSize: '20',
+        fontFamily: 'Poppins-SemiBold, Arial',
+        fontSize: 20,
         color:'#4f753e',
     },
     titleContainer:{
@@ -122,7 +122,7 @@ const styles = StyleSheet.create({
     buttonText: {
         color: '#fff',
         fontSize: 16,
-        // fontFamily: 'Poppins-SemiBold, Arial',
+        fontFamily: 'Poppins-SemiBold, Arial',
     },
 });
 

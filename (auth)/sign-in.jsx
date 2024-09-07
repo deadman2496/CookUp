@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, TouchableOpacity, ImageBackground, ActivityIndicator } from 'react-native';
-import { account } from '../lib/appwrite';
+import { View, TextInput, Button, Text, StyleSheet, TouchableOpacity, ImageBackground, ActivityIndicator, Alert } from 'react-native';
+import { account, signIn } from '../lib/appwrite';
 import FontLoader from '../utils/FontLoader';
 
 
@@ -9,6 +9,7 @@ const SignInScreen = ({ navigation }) => {
     const [password, setPassword] = useState('');
     const [error, setError ] = useState(null);
     const fontsLoaded = FontLoader();
+
 
     if (!fontsLoaded){
         return (
@@ -20,10 +21,11 @@ const SignInScreen = ({ navigation }) => {
 
     const handleSignIn =  async () => {
         try {
-            await account.createEmailSession(email, password);
-            navigation.navigate('Home'); // Navigates to home when successful
-        } catch (err) {
-            setError(err.message);
+            await signIn(email, password);
+            Alert.alert('Success', 'Signed in successfully');
+            navigation.navigate('Drawer', { screen: 'Home'}); // Navigates to home when successful
+        } catch (error) {
+            Alert.alert('Login Error:',error.message);
         }
     };
 

@@ -37,6 +37,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import WelcomeScreen from './(auth)/sign-up/StepZero';
 import { useFonts } from 'expo-font';
 import FontLoader from './utils/FontLoader';
+import Onboarding from './screens/Onboarding';
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -66,12 +67,12 @@ export function Onboard() {
             cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
           }}
           initialRouteName="SignUp">
-                <Stack.Screen name="SignUp" component={SignUp} options={{ title: 'Sign Up' }} />
-                <Stack.Screen name="OnboardingStepOne" component={OnboardingStepOne} options={{ title: 'Welcome' }} />
+                {/* <Stack.Screen name="OnboardingStepOne" component={OnboardingStepOne} options={{ title: 'Welcome' }} />
                 <Stack.Screen name="OnboardingStepTwo" component={OnboardingStepTwo} options={{ title: 'Serving Size' }} />
                 <Stack.Screen name="OnboardingStepThree" component={OnboardingStepThree} options={{ title: 'Options' }} />
                 <Stack.Screen name="OnboardingStepFour" component={OnboardingStepFour} options={{ title: 'Dietary Restrictions' }} />
-                <Stack.Screen name="OnboardingStepFive" component={OnboardingStepFive} options={{ title: 'Food Allergies' }} />
+                <Stack.Screen name="OnboardingStepFive" component={OnboardingStepFive} options={{ title: 'Food Allergies' }} /> */}
+                <Stack.Screen name="OnboardPage" component={Onboarding} options={{ headerShown: false }} />
                 <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Home' }} />
             </Stack.Navigator>
   )
@@ -236,8 +237,21 @@ export default function App() {
       <AuthNavigator isFirstTime={isFirstTime}/>
     )}
     </NavigationContainer>
+    
+    // <RecipeProvider>
+    // <FavoriteRecipesProvider>
+    // <NavigationContainer>
+    //   <Stack.Navigator>
+    //             {/* Main Drawer Navigator */}
+    //             <Stack.Screen name="Drawer" component={DrawerNavigator} options={{ headerShown: false }} />
+
+    //             {/* Screens Without Drawer Access */}
+    //             <Stack.Screen name="NoDrawerStack" component={NoDrawerStackNavigator} options={{ headerShown: false }} />
+    //         </Stack.Navigator>
+    // </NavigationContainer>
+    // </FavoriteRecipesProvider>
+    // </RecipeProvider>
+  
+
   );
-
-
-
 };

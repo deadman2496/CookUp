@@ -5,7 +5,7 @@ import CustomHeader from '../../components/CustomHeader';
 
 const StepThree = ({ navigation, route }) => {
     const { firstName, lastName, phoneNumber } = route.params;
-    const [username, setUsername] = useState('');
+    const [username, setUserName] = useState('');
 
     const handleNext = () => {
         navigation.navigate('StepFour', { firstName, lastName, phoneNumber, username });
@@ -27,7 +27,7 @@ const StepThree = ({ navigation, route }) => {
                 style={styles.input}
                 placeholder="Username"
                 value={username}
-                onChangeText={setUsername}
+                onChangeText={setUserName}
             />
                 <TouchableOpacity style={styles.button} onPress={handleNext}>
                     <Text style={styles.buttonText}>Next</Text>    
@@ -61,15 +61,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     title: {
-        //fontFamily: 'Poppins-SemiBold, Arial',
-        fontSize: '34',
+        fontFamily: 'Poppins-SemiBold, Arial',
+        fontSize: 34,
         color:'#4f753e',
         marginBottom: 15,
         marginTop: 15,
     },
     message: {
-        //fontFamily: 'Poppins-SemiBold, Arial',
-        fontSize: '20',
+        fontFamily: 'Poppins-SemiBold, Arial',
+        fontSize: 20,
         color:'#4f753e',
     },
     titleContainer:{
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     buttonText: {
         color: '#fff',
         fontSize: 16,
-        // fontFamily: 'Poppins-SemiBold, Arial',
+        fontFamily: 'Poppins-SemiBold, Arial',
     },
 });
 

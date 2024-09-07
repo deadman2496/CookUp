@@ -3,20 +3,29 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons'; // You can use any icon library
 
-const CustomHeader = ({ title, progress }) => {
-    const navigation = useNavigation();
-
+const CustomHeader = ({ currentStep, totalSteps, onBack, onSkip }) => {
     return (
         <View style={styles.headerContainer}>
-            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <TouchableOpacity onPress={onBack} style={styles.backButton}>
                 <Ionicons name="arrow-back" size={24} color="black" />
             </TouchableOpacity>
-            <View style={styles.progressContainer}>
-                <Text style={styles.title}>{title}</Text>
-                <View style={styles.progressBar}>
-                    <View style={[styles.progress, { width: `${progress}%` }]} />
-                </View>
+
+            {/* Progress Dots */}
+            <View style={styles.dotContainer}>
+                {Array.from({ length: totalSteps }, (_, index) => (
+                    <View
+                        key={index}
+                        style={[styles.dot, currentStep === index ? styles.activeDot : styles.inactiveDot]}
+                    />
+                ))}
             </View>
+
+            {/* Skip Button */}
+            {onSkip && (
+                <TouchableOpacity onPress={onSkip}>
+                    <Text style={styles.skipText}>Skip</Text>
+                </TouchableOpacity>
+            )}
         </View>
     );
 };
@@ -24,11 +33,35 @@ const CustomHeader = ({ title, progress }) => {
 const styles = StyleSheet.create({
     headerContainer: {
         flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        padding: 10,
-        backgroundColor: '#f8f8f8',
+        padding: 16,
+        backgroundColor: '#fff',
         borderBottomWidth: 1,
-        borderBottomColor: '#ddd',
+        borderBottomColor: '#eaeaea',
+    },
+    backText: {
+        fontSize: 16,
+        color: 'blue',
+    },
+    skipText: {
+        fontSize: 16,
+        color: 'blue',
+    },
+    dotContainer:{
+        flexDirection: 'row',
+    },
+    dot: {
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+        marginHorizontal: 5,
+    },
+    activeDot: {
+        backgroundColor: 'blue',
+    },
+    inactiveDot:{
+        backgroundColor: 'gray',
     },
     backButton: {
         paddingRight: 15,

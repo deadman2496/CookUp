@@ -62,15 +62,15 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     title: {
-        //fontFamily: 'Poppins-SemiBold, Arial',
-        fontSize: '34',
+        fontFamily: 'Poppins-SemiBold, Arial',
+        fontSize: 34,
         color:'#4f753e',
         marginBottom: 15,
         marginTop: 15,
     },
     message: {
-        //fontFamily: 'Poppins-SemiBold, Arial',
-        fontSize: '20',
+        fontFamily: 'Poppins-SemiBold, Arial',
+        fontSize: 20,
         color:'#4f753e',
     },
     titleContainer:{
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     buttonText: {
         color: '#fff',
         fontSize: 16,
-        // fontFamily: 'Poppins-SemiBold, Arial',
+        fontFamily: 'Poppins-SemiBold, Arial',
     },
 });
 

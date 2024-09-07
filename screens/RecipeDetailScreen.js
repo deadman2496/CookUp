@@ -1,11 +1,13 @@
 // In screens/RecipeDetailScreen.js
 import React, {useState, useContext } from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, FlatList, Dimensions } from 'react-native';
+import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, FlatList, Dimensions, Modal, Button, } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
 import { Rating } from 'react-native-ratings';
 import { TabView, SceneMap } from 'react-native-tab-view';
 import { useFavorite } from '../contexts/BookmarkContext';
+import UnitConverter from '../constants/conversionTable';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const RecipeDetailScreen = ({ route, navigation }) => {
@@ -14,6 +16,7 @@ const RecipeDetailScreen = ({ route, navigation }) => {
     const [index, setIndex] = useState(0);
     const [selectedFilters, setSelectedFilters] = useState({});
     const { isFavorite, addFavorite, removeFavorite } = useFavorite();
+    const [ modalVisible, setModalVisible ] = useState(false);
 
     const handleBookmarkToggle = () => {
       if (isFavorite(recipe.id)) {
@@ -79,11 +82,12 @@ const RecipeDetailScreen = ({ route, navigation }) => {
   return (
     <ScrollView style={StyleSheet.container} showsVerticalScrollIndicator={false}>
       <Image source={recipe.image} style={styles.image} />
+
       <View style={styles.infoContainer}>
+        {/* contains title, reviews, who it was created by and the bookmark icon */}
       <View style={styles.headerRow}>
         <Text style={styles.creatorText}>by {recipe.creator}</Text>
         <View style={styles.ratingRow}>
-          {/* <Text style={styles.ratingValue}>{recipe.rating.toFixed(1)}</Text> */}
         <Rating
           type="star"
           ratingCount={5}
@@ -106,26 +110,7 @@ const RecipeDetailScreen = ({ route, navigation }) => {
         </TouchableOpacity>
       </View>
       <Text style={styles.title}>{recipe.title}</Text>
-
-      {/* User defined filters //
-        <View style={styles.filtersContainer}>
-        {recipe.filters && recipe.filters.map(filter => (
-          <View key={filter.key} style={styles.filterItem}> 
-            <Text style={styles.filterLabel}>{filter.label}</Text>
-            <Picker
-              selectedValue={selectedFilters[filter.key]}
-              style={styles.Picker}
-              onValueChange={(itemValue) => handleFilterToggle(filter.key, itemValue)}
-            >
-              {filter.options.map(option => (
-                <Picker.Item key={option} label={option} value={option} />
-              ))}
-
-            </Picker>
-          </View>
-        ))}
-
-      </View> */}
+      {/* filter section */}
       <View style={styles.filtersContainer}>
         <View style={styles.filterTag}>
           <Text style={styles.filterText}>{recipe.mealType}</Text>
@@ -139,6 +124,7 @@ const RecipeDetailScreen = ({ route, navigation }) => {
         </View>
       </View>
 
+      {/* contains the sections for serving sizes, preparation time, and time to cook */}
       <View style={styles.detailsRow}>
         <View style={[styles.detailItem, styles.detailBorderRight]}>
           <Text style={styles.detailTitle}>
@@ -166,6 +152,8 @@ const RecipeDetailScreen = ({ route, navigation }) => {
         </View>
         
       </View>
+
+      {/* this is the visual section for the ingredients tab and instructions tab. */}
       <View style={styles.tabViewContainer}>
       <TabView
         navigationState={{ index, routes}}
@@ -179,11 +167,28 @@ const RecipeDetailScreen = ({ route, navigation }) => {
       />
       </View>
 
+        {/* this contains the option to add a review as well as the option to customize the recipe */}
       <View style={styles.reviewPromptContainer}>
         <Text style={styles.reviewPromptText}>Have you made this recipe?</Text>
         <TouchableOpacity style={styles.addReviewButton} onPress={handleAddReviewPress}>
           <Text style={styles.addReviewButtonText}>Add a Review</Text>
         </TouchableOpacity>
+      </View>
+
+      <View>
+        <Button title="Customize" onPress={() => setModalVisible(true)} />
+
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View>
+            <UnitConverter />
+            <Button title="Close" onPress={() => setModalVisible(false)} />
+          </View>
+        </Modal>
       </View>
 
       
