@@ -167,6 +167,10 @@ const SearchScreen = ({ navigation }) => {
       setCustomFilterModalVisible(true);
    };
 
+   const backendModalVisible = () => {
+
+   };
+
    return (
     <SafeAreaView style={styles.container}>
 
@@ -327,7 +331,7 @@ const SearchScreen = ({ navigation }) => {
               </KeyboardAvoidingView>
             </Modal>
 
-            <Modal 
+            {/* <Modal 
               animationType='slide'
               transparent={true}
               visible={backendModalVisible}
@@ -341,7 +345,7 @@ const SearchScreen = ({ navigation }) => {
       <View>
       <Text>Filter by Tags:</Text>
       <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
-        {/* Display tag filter options */}
+        {/* Display tag filter options 
         {['Italian', 'Dinner', 'Easy'].map((tag) => (
           <TouchableOpacity
             key={tag}
@@ -368,7 +372,7 @@ const SearchScreen = ({ navigation }) => {
         )}
       />
     </View>
-            </Modal>
+            </Modal> */}
 
       {/* Horizontal Filters */}
       <ScrollView horizontal showsHorizontalScrollIndicator={false} styles={styles.filterScrollContainer}>

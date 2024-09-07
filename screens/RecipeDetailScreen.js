@@ -124,6 +124,13 @@ const RecipeDetailScreen = ({ route, navigation }) => {
         </View>
       </View>
 
+      {/* imported from Back end Filter Section */}
+      {recipe.tags.map((tag, index) => (
+        <View key={index} style={styles.filterTag}>
+          <Text style={styles.filterText}>{tag}</Text>
+        </View>
+      ))}
+
       {/* contains the sections for serving sizes, preparation time, and time to cook */}
       <View style={styles.detailsRow}>
         <View style={[styles.detailItem, styles.detailBorderRight]}>
