@@ -6,7 +6,7 @@ import { recipes } from '../constants/recipeindex';
 import MediumRecipeCard from '../components/MediumRecipeCard';
 import { extractFilters } from '../utils/filters';
 import { useRecipes } from '../contexts/RecipeContext';
-import { getAllRecipes } from '../utils/RecipeCaller';
+import { getAllRecipes, getRecipesByTag } from '../utils/RecipeCaller';
 
 
 const SearchScreen = ({ navigation }) => {
@@ -32,6 +32,7 @@ const SearchScreen = ({ navigation }) => {
   const [customDietaryPreference, setCustomDietaryPreference] = useState('');
   const [customFilterType, setCustomFilterType] = useState('');
   const [customFilterValue, setCustomFilterValue] = useState('');
+  const [ selectedTags, setSelectedTags ] = useState([]);
 
   // useEffect(() => {
   //   setFilteredRecipes(shuffleArray(recipes));
@@ -45,6 +46,23 @@ const SearchScreen = ({ navigation }) => {
     }
     fetchRecipes();
   }, []);
+
+  useEffect(() => {
+    const fetchRecipes = async () => {
+      const recipes = await getRecipesByTag(selectedTags);
+      setFilteredRecipes(recipes);
+    };
+
+    if (selectedTags.length > 0) {
+      fetchRecipes();
+    }
+  }, [selectedTags]);
+
+  const handleTagSelect = (tag) => {
+    setSelectedTags((prevTags) =>
+      prevTags.includes(tag) ? prevTags.filter((t) => t !== tag) : [...prevTags, tag]
+    );
+  };
 
 
   const shuffleArray = (array) => {
@@ -219,12 +237,7 @@ const SearchScreen = ({ navigation }) => {
                             </TouchableOpacity>
                         ))}
                         </View>
-                        {/* <TextInput
-                          style={styles.input}
-                          placeholder='add custom cuisine'
-                          value={customCuisine}
-                          onChangeText={setCustomCuisine}
-                        /> */}
+                     
                         <Button 
                           title="Add Cuisine" 
                           onPress={() => openCustomFilterModal('cuisines')} 
@@ -249,12 +262,7 @@ const SearchScreen = ({ navigation }) => {
                             </TouchableOpacity>
                         ))}
                         </View>
-                        {/* <TextInput
-                          style={styles.input}
-                          placeholder='add custom dietary preference'
-                          value={customDietaryPreference}
-                          onChangeText={setCustomDietaryPreference}
-                        /> */}
+                       
                         <Button 
                           title="Add Dietary Preference" 
                           onPress={() => openCustomFilterModal('dietaryPreferences')} 
@@ -317,6 +325,49 @@ const SearchScreen = ({ navigation }) => {
                   </View>
                 </View>
               </KeyboardAvoidingView>
+            </Modal>
+
+            <Modal 
+              animationType='slide'
+              transparent={true}
+              visible={backendModalVisible}
+              onRequestClose={() => {
+                setCustomFilterModalVisible(false);
+                setMainModalVisible(true); 
+              }
+            }
+            >
+             
+      <View>
+      <Text>Filter by Tags:</Text>
+      <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
+        {/* Display tag filter options */}
+        {['Italian', 'Dinner', 'Easy'].map((tag) => (
+          <TouchableOpacity
+            key={tag}
+            onPress={() => handleTagSelect(tag)}
+            style={{
+              padding: 10,
+              backgroundColor: selectedTags.includes(tag) ? 'blue' : 'gray',
+              margin: 5,
+            }}
+          >
+            <Text style={{ color: 'white' }}>{tag}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      <FlatList
+        data={filteredRecipes}
+        keyExtractor={(item) => item.$id}
+        renderItem={({ item }) => (
+          <View>
+            <Text>{item.title}</Text>
+            <Text>{item.tags.join(', ')}</Text>
+          </View>
+        )}
+      />
+    </View>
             </Modal>
 
       {/* Horizontal Filters */}

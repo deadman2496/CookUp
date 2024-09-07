@@ -23,7 +23,7 @@ const SignInScreen = ({ navigation }) => {
         try {
             await signIn(email, password);
             Alert.alert('Success', 'Signed in successfully');
-            navigation.navigate('Drawer', { screen: 'Home'}); // Navigates to home when successful
+            navigation.replace('Home'); // Navigates to home when successful
         } catch (error) {
             Alert.alert('Login Error:',error.message);
         }

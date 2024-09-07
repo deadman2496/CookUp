@@ -47,6 +47,13 @@ const LargeRecipeCard = ({ item, onPress}) => {
                         <Text style={styles.filterText}>{item.averageCost}</Text>
                     </View>
                 </View>
+                <View style={styles.filtersContainer}>
+                    {recipes.tags.map((tag, index) => (
+                        <View key={index} style={styles.filterTag}>
+                            <Text>{tag}</Text>
+                        </View>
+                    ))}
+                </View>
                 
                 <Text style={styles.creator}>Created by: {item.creator}</Text>
             </View>
