@@ -5,9 +5,10 @@ import { Ionicons } from '@expo/vector-icons';
 import { mealTypes, cuisines, dietaryPreferences } from '../utils/filters';
 import { useRecipes } from '../contexts/RecipeContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { addNewRecipe } from '../lib/appwrite';
 
 const NewRecipeScreen = ({navigation}) => {
-  const { addNewRecipe } = useRecipes(); // Access to addNewRecipe from RecipeContext
+  //const { addNewRecipe } = useRecipes(); // Access to addNewRecipe from RecipeContext
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [servingSize, setServingSize] = useState(1);
@@ -116,11 +117,16 @@ const NewRecipeScreen = ({navigation}) => {
         images,
       };
 
-      addNewRecipe(newRecipe); // adds new recipe to the RecipeContext and RecipeIndex
+      try {
+        addNewRecipe(newRecipe); // adds new recipe to Appwrite/database
+      Alert.alert('Success', 'Recipe added successfully!');
       console.log(newRecipe);
-      Alert.alert('Success','Recipe added successfully!');
-      navigation.navigate('Home'); //if successful, navigates to Home screen
-    }
+      navigation.navigate('Home'); //if successful, navigates to Home screen  
+      } catch (error) {
+        Alert.alert('Error', 'Failed to add recipe. Please try again.');
+      }
+      
+    };
 
     const renderImageGrid = () => {
       <Modal

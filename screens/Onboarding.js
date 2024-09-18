@@ -1,15 +1,25 @@
-import React, { useState } from 'react';
-import { View, Text, Button, TouchableOpacity, SafeAreaView, StyleSheet, Image } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, Button, TouchableOpacity, SafeAreaView, StyleSheet, Image, ScrollView, TextInput } from 'react-native';
 import fpIcon from '../constants/images';
 import FontLoader from '../utils/FontLoader';
 import CustomButton from '../components/CustomButton';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import FilterTag from '../components/FilterTags';
+import { getDietaryRestrictions, getAllergies, saveCustomTag, appwriteConfig, addOnboardTag } from '../lib/appwrite';
 
 // Component for individual pages in the onboarding flow
 const Onboarding = ({ navigation }) => {
   const [step, setStep] = useState(0);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedPurpose, setSelectedPurpose] = useState(null);
+  const [selectedDiet, setSelectedDiet] = useState([]);
+  const [selectedAllergy, setSelectedAllergy] = useState([]);
+  const [selectedTags, setSelectedTags] = useState([]);
+  const [customTag, setCustomTag ] = useState ('');
+  const [isDietarySection, setIsDietarySection] = useState(true);
+  const [dietaryRestrictions, setDietaryRestrictions] = useState([]);
+
+
 
   // Progress indicators (dots)
   const steps = [
@@ -52,6 +62,33 @@ const Onboarding = ({ navigation }) => {
     setSelectedSize(sizeId);
   };
 
+  useEffect(() => {
+    const fetchTags = async () => {
+    if (isDietarySection) {
+      const restrictions = await getDietaryRestrictions();
+      setDietaryRestrictions(restrictions);
+    } else {
+      const allergyList = await getAllergies();
+      setAllergies(allergyList);
+    }
+  };
+  fetchTags();
+  }, [isDietarySection]);
+
+  handleTagPress = (tag) => {
+    setSelectedTags((prev) => 
+      prev.includes(tag) ? prev.filter((item) => item !== tag) : [...prev,tag]
+    );
+  };
+
+  const handleAddCustomTag = async () => {
+    if (customTag.trim() === '') return;
+    await addOnboardTag(customTag, isDietarySection);
+    setSelectedTags([...selectedTags, customTag]); // Add to selected tags
+    setCustomTag(''); // Clear input field
+  };
+
+
   // Conditionally render steps
   const renderStepContent = () => {
     switch (step) {
@@ -83,9 +120,23 @@ const Onboarding = ({ navigation }) => {
       case 2:
         return <PurposePage selectedPurpose={selectedPurpose} setSelectedPurpose={setSelectedPurpose}/>;
       case 3:
-        return <DietaryRestrictionsPage />;
+        return <DietaryRestrictionsPage 
+          selectedTags={selectedTags}
+          setSelectedTags={setSelectedTags}
+          handleTagPress={handleTagPress}
+          customTag={customTag}
+          setCustomTag={setCustomTag}
+          handleAddCustomTag={handleAddCustomTag}
+        />;
       case 4:
-        return <AllergyPage />;
+        return <AllergyPage 
+        selectedTags={selectedTags}
+        setSelectedTags={setSelectedTags}
+        handleTagPress={handleTagPress}
+        customTag={customTag}
+        setCustomTag={setCustomTag}
+        handleAddCustomTag={handleAddCustomTag}
+        />;
       default:
         return null;
     }
@@ -200,6 +251,7 @@ const PurposePage = ({ selectedPurpose, setSelectedPurpose }) => {
     setSelectedPurpose(purposeId);
   };
 
+
   return (
     <View style={styles.pageContainer}>
       <Text style={styles.reasonTitle}>What is your Primary objective using Cook Up?</Text>
@@ -226,24 +278,117 @@ const PurposePage = ({ selectedPurpose, setSelectedPurpose }) => {
     </View>
   );
 };
+const DietaryRestrictionsPage = ({ selectedTags, handleTagPress, customTag, setCustomTag, handleAddCustomTag }) => {
+  const [dietaryRestrictions, setDietaryRestrictions] = useState([]);
 
-const DietaryRestrictionsPage = ({ onNext, onBack }) => (
-  <View style={styles.pageContainer}>
-    <Text style={styles.title}>Do you have any dietary restrictions?</Text>
-    <Button title="Vegan" onPress={onNext} />
-    <Button title="Gluten-Free" onPress={onNext} />
-    <Button title="None" onPress={onNext} />
-  </View>
-);
+  useEffect(() => {
+    const fetchRestrictions = async () => {
+      const restrictions = await getDietaryRestrictions();
+      setDietaryRestrictions(restrictions);
+    };
 
-const AllergyPage = ({ onNext, onBack }) => (
-  <View style={styles.pageContainer}>
-    <Text style={styles.title}>Do you have any food allergies?</Text>
-    <Button title="Peanuts" onPress={onNext} />
-    <Button title="Shellfish" onPress={onNext} />
-    <Button title="Dairy" onPress={onNext} />
-  </View>
-);
+    fetchRestrictions();
+  }, []);
+
+  return (
+    <ScrollView>
+      <View style={styles.pageContainer}>
+        <Text style={styles.title}>Do you have any dietary restrictions?</Text>
+        <View style={styles.tagContainer}>
+          {dietaryRestrictions.map((tag, index) => (
+            <FilterTag
+              key={index}
+              label={tag}
+              selected={selectedTags.includes(tag)}
+              onPress={() => handleTagPress(tag)}
+              type="dietaryPreferences"
+            />
+          ))}
+        </View>
+
+        <TextInput
+          value={customTag}
+          onChangeText={setCustomTag}
+          placeholder="Add custom restriction"
+          style={styles.customTagInput}
+        />
+        <TouchableOpacity onPress={handleAddCustomTag} style={styles.addButton}>
+          <Text style={styles.addButtonText}>Add</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
+  );
+};
+
+// Allergy Page
+const AllergyPage = ({ selectedTags, handleTagPress, customTag, setCustomTag, handleAddCustomTag }) => {
+  const [allergies, setAllergies] = useState([]);
+
+  useEffect(() => {
+    const fetchAllergies = async () => {
+      const fetchedAllergies = await getAllergies();
+      setAllergies(fetchedAllergies);
+    };
+
+    fetchAllergies();
+  }, []);
+
+  return (
+    <ScrollView>
+      <View style={styles.pageContainer}>
+        <Text style={styles.title}>Do you have any food allergies?</Text>
+        <View style={styles.tagContainer}>
+          {allergies.map((tag, index) => (
+            <FilterTag
+              key={index}
+              label={tag}
+              selected={selectedTags.includes(tag)}
+              onPress={() => handleTagPress(tag)}
+              type="allergies"
+            />
+          ))}
+        </View>
+
+        <TextInput
+          value={customTag}
+          onChangeText={setCustomTag}
+          placeholder="Add custom allergy"
+          style={styles.customTagInput}
+        />
+        <TouchableOpacity onPress={handleAddCustomTag} style={styles.addButton}>
+          <Text style={styles.addButtonText}>Add</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
+  );
+};
+
+
+// const DietaryRestrictionsPage = ({ onNext, onBack }) => (
+//   <View style={styles.pageContainer}>
+//     <Text style={styles.title}>Do you have any dietary restrictions?</Text>
+//     {(isDietarySection ? dietaryRestrictions : allergies).map((tag, index) => ( 
+//     <FilterTag 
+//       key={index}
+//       label={tag}
+//       selected={selectedTags.includes(tag)}
+//       type={isDietarySection ? 'dietaryPreferences' : 'allergies'}
+//     />
+//     ))}
+//     <Button title="Vegan" onPress={onNext} />
+//     <Button title="Gluten-Free" onPress={onNext} />
+//     <Button title="None" onPress={onNext} />
+//   </View>
+// );
+
+// const AllergyPage = ({ onNext, onBack }) => (
+//   <View style={styles.pageContainer}>
+//     <Text style={styles.title}>Do you have any food allergies?</Text>
+//     <Button title="Peanuts" onPress={onNext} />
+//     <Button title="Shellfish" onPress={onNext} />
+//     <Button title="Dairy" onPress={onNext} />
+//   </View>
+// );
 
 export default Onboarding;
 
@@ -360,6 +505,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 10,
     backgroundColor: '#fff',
+  },
+  tagContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginBottom: 16
   },
   selectedOption: {
     borderColor: '#4f753e', // Highlight the selected option

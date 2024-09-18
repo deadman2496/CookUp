@@ -4,13 +4,14 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, ScrollView, SafeAre
 import { Ionicons } from '@expo/vector-icons';
 import { Rating } from 'react-native-ratings';
 import { recipes, featuredRecipes } from '../constants/recipeindex';
+import { getAllRecipes } from '../lib/appwrite';
 import { useNavigation } from '@react-navigation/native';
 import SmallRecipeCard from '../components/SmallRecipeCard';
 import MediumRecipeCard from '../components/MediumRecipeCard';
 import LargeRecipeCard from '../components/LargeRecipeCard';
 import { useFavorite } from '../contexts/BookmarkContext';
 import { useRecipes } from '../contexts/RecipeContext';
-import { getAllRecipes } from '../utils/RecipeCaller';
+// calls upon recipes offline MOSTLY FOR DEBUGGING ONLY import { getAllRecipes } from '../utils/RecipeCaller';
 import axios from 'axios';
 import { getRecipes } from '../api';
 
@@ -42,11 +43,24 @@ const HomeScreen = () => {
   // }, []);
 
     // vvvv This Variable calls upon the Recipes from the Back End server. vvvv
+    // useEffect(() => {
+    //   async function fetchRecipes() {
+    //     const fetchedRecipes = await getAllRecipes();
+    //     setRecipes(fetchedRecipes);
+    //   }
+    //   fetchRecipes();
+    // }, []);
+
     useEffect(() => {
-      async function fetchRecipes() {
-        const fetchedRecipes = await getAllRecipes();
-        setRecipes(fetchedRecipes);
-      }
+      const fetchRecipes = async () => {
+        try {
+          const fetchedRecipes = await getAllRecipes(); // Fetch recipes from Appwrite
+          setRecipes(fetchedRecipes); // Set the fetched recipes to state
+        } catch (error) {
+          console.error('Error fetching recipes:', error);
+        }
+      };
+  
       fetchRecipes();
     }, []);
 
@@ -57,52 +71,52 @@ const HomeScreen = () => {
    const renderSmallCard = ({ item }) => (
       <SmallRecipeCard 
         item={item}
-        onPress={() => navigation.navigate('NoDrawerStack',{screen:'Details', params: { recipe: item },})}
+        onPress={() => navigation.navigate("RecipeDetails", { recipe: item.$id },)}
       />
     );
 
     const renderMediumCard = ({ item }) => (
       <MediumRecipeCard 
         item={item}
-        onPress={() => navigation.navigate('NoDrawerStack',{screen:'Details', params: { recipe: item },})}
+        onPress={() => navigation.navigate("RecipeDetails",{ recipe: item.$id })}
       />
      );
 
   const renderLargeCard = ({ item }) => (
     <LargeRecipeCard 
       item={item}
-      onPress={() => navigation.navigate('NoDrawerStack',{screen:'Details', params: { recipe: item },})}
+      onPress={() => navigation.navigate("RecipeDetails", { recipe: item.$id })}
     />
   );
 
    return (
     <SafeAreaView style={styles.container}>
         <ScrollView>
-      <Text style={styles.sectionTitle}>On Your Menu</Text>
+      {/* <Text style={styles.sectionTitle}>On Your Menu</Text>
       {favoriteRecipes.length > 0 ? (
       <FlatList
         horizontal
         data={favoriteRecipes}
         renderItem={renderSmallCard}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.$id}
         showsHorizontalScrollIndicator={false}
       />
       ) : (
         <Text style={styles.emptyText}>You haven't favorited any recipes yet!</Text>
-      )}
+      )} */}
       <Text style={styles.sectionTitle}>Recommended for You</Text>
       <FlatList
         horizontal
         data={recommendedRecipes}
         renderItem={renderMediumCard}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.$id}
         showsHorizontalScrollIndicator={false}
      />
       <Text style={styles.sectionTitle}>Your Feed</Text>
       <FlatList
         data={latestRecipes}
         renderItem={renderLargeCard}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.$id}
         showsVerticalScrollIndicator={false}
       />
       </ScrollView>

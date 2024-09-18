@@ -1,5 +1,5 @@
 // In screens/RecipeDetailScreen.js
-import React, {useState, useContext } from 'react';
+import React, {useState, useContext, useEffect } from 'react';
 import { View, Text, Image, StyleSheet, TouchableOpacity, ScrollView, FlatList, Dimensions, Modal, Button, } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,15 +8,52 @@ import { TabView, SceneMap } from 'react-native-tab-view';
 import { useFavorite } from '../contexts/BookmarkContext';
 import UnitConverter from '../constants/conversionTable';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getRecipeById, getAllRecipes } from '../lib/appwrite';
+import FilterTag from '../components/FilterTags';
+import { addGroceryItem } from '../lib/appwrite';
 
 
 const RecipeDetailScreen = ({ route, navigation }) => {
-    const { recipe } = route.params;
+    const { documentId } = route.params;
     const [saved, setSaved] = useState(false);
     const [index, setIndex] = useState(0);
-    const [selectedFilters, setSelectedFilters] = useState({});
+    const [selectedFilters, setSelectedFilters] = useState([]);
     const { isFavorite, addFavorite, removeFavorite } = useFavorite();
     const [ modalVisible, setModalVisible ] = useState(false);
+    const [recipe, setRecipe ] = useState(null);
+    const [loading, setLoading ] = useState(null);
+    const [routes] = useState([
+      { key: 'ingredients', title: 'Ingredients' },
+      { key: 'instructions', title: 'Instructions' },
+      ]);
+
+    useEffect(() => {
+      const fetchRecipe = async () => {
+        try {
+          console.log("Fetching recipe with ID:", documentId);
+
+          const fetchedRecipe = await getRecipeById(documentId);
+
+          console.log("Fetched recipe from Appwrite:", fetchedRecipe);
+
+          setRecipe(fetchedRecipe);
+        } catch (error) {
+          console.error('Failed to fetch recipe:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchRecipe();
+    }, [documentId]);
+
+    if (!recipe) {
+      return (
+        <View>
+          <Text>Loading....</Text>
+        </View>
+      );
+    }
 
     const handleBookmarkToggle = () => {
       if (isFavorite(recipe.id)) {
@@ -27,11 +64,8 @@ const RecipeDetailScreen = ({ route, navigation }) => {
      };
 
     
-    const [routes] = useState([
-      { key: 'ingredients', title: 'Ingredients' },
-      { key: 'instructions', title: 'Instructions' },
-      ]);
 
+    
     const handleAddReviewPress = () => {
       navigation.navigate('AddReviewPage', { recipe, onAddReview: (newReview) => {
         recipe.reviews.push(newReview);
@@ -40,13 +74,21 @@ const RecipeDetailScreen = ({ route, navigation }) => {
       alert('add a review now.');
      };
 
-    const handleFilterToggle = (key, value) => { 
-        setSelectedFilters(prevFilters => ({
-          ...prevFilters,
-          [key]: value
-        }));
-      };
+    // const handleFilterToggle = (key, value) => { 
+    //     setSelectedFilters(prevFilters => ({
+    //       ...prevFilters,
+    //       [key]: value
+    //     }));
+    //   };
 
+    const handleTagPress = (filter) => {
+      setSelectedFilters((prev) =>
+        prev.includes(filter)
+          ? prev.filter((item) => item !== filter)
+          : [...prev, filter]
+      );
+    };
+    
     const handleReviewPress = () => {
       navigation.navigate('ReviewPage', { reviews: recipe.reviews, recipe });
     };
@@ -56,37 +98,77 @@ const RecipeDetailScreen = ({ route, navigation }) => {
         setSaved(!saved);
     };
 
+    // const IngredientsRoute = () => (
+    //   <ScrollView style={styles.tabContainer}>
+    //       {recipe.ingredients.map((ingredient, index) => (
+    //         <Text key={index} style={styles.tabText}>
+    //           {ingredient}
+    //           </Text>
+    //       ))}
+    //   </ScrollView>
+    // );
     const IngredientsRoute = () => (
       <ScrollView style={styles.tabContainer}>
-          {recipe.ingredients.map((ingredient, index) => (
+        {recipe?.ingredients ? (
+          recipe.ingredients.map((ingredient, index) => (
             <Text key={index} style={styles.tabText}>
               {ingredient}
-              </Text>
-          ))}
+            </Text>
+          ))
+        ) : (
+          <Text>No ingredients available</Text>
+        )}
       </ScrollView>
     );
 
-    const InstructionsRoute = () => (
+    // const InstructionsRoute = () => (
+    //   <ScrollView style={styles.tabContainer}>
+    //     {recipe.instructions.map((instruction, index) => (
+    //       <Text key={index} style={styles.tabText}>
+    //         {index + 1}. {instruction}
+    //         </Text>
+    //     ))}
+    //   </ScrollView>
+    //  );
+
+     const InstructionsRoute = () => (
       <ScrollView style={styles.tabContainer}>
-        {recipe.instructions.map((instruction, index) => (
-          <Text key={index} style={styles.tabText}>
-            {index + 1}. {instruction}
+        {recipe?.instructions ? (
+          recipe.instructions.map((instruction, index) => (
+            <Text key={index} style={styles.tabText}>
+              {index + 1}. {instruction}
             </Text>
-        ))}
+          ))
+        ) : (
+          <Text>No ingredients available</Text>
+        )}
       </ScrollView>
-     );
+    );
 
+    const addIngredientsToGroceryList = async () => {
+      try {
+        const groceryList = recipe.ingredients.map((ingredient) => ({
+          name : ingredient,
+          recipe: recipe.title,
+        }));
 
+        await addGroceryItem(groceryList);
+
+        alert('Ingredients added to Grocery List!')
+      } catch (error) {
+        console.error('Error adding ingredients to Grocery List: ', error);
+      }
+    };
 
 
   return (
     <ScrollView style={StyleSheet.container} showsVerticalScrollIndicator={false}>
-      <Image source={recipe.image} style={styles.image} />
+      <Image source={{ uri: recipe.imageUrl}} style={styles.image} />
 
       <View style={styles.infoContainer}>
         {/* contains title, reviews, who it was created by and the bookmark icon */}
       <View style={styles.headerRow}>
-        <Text style={styles.creatorText}>by {recipe.creator}</Text>
+        <Text style={styles.creatorText}>by {recipe.username}</Text>
         <View style={styles.ratingRow}>
         <Rating
           type="star"
@@ -112,24 +194,54 @@ const RecipeDetailScreen = ({ route, navigation }) => {
       <Text style={styles.title}>{recipe.title}</Text>
       {/* filter section */}
       <View style={styles.filtersContainer}>
-        <View style={styles.filterTag}>
-          <Text style={styles.filterText}>{recipe.mealType}</Text>
-        </View>
-        <View style={styles.filterTag}>
-          <Text style={styles.filterText}>{recipe.cuisine}</Text>
-        </View><View style={styles.filterTag}>
-          <Text style={styles.filterText}>{recipe.dietaryPreferences}</Text>
-        </View><View style={styles.filterTag}>
-          <Text style={styles.filterText}>{recipe.averageCost}</Text>
-        </View>
+      {recipe.mealType.map((mealType, index) => (
+        // <View key={index} style={styles.filterTag}>
+        //   <Text style={styles.filterText}>{mealType}</Text>
+        // </View>
+        <FilterTag 
+          key={index}
+          label={mealType}
+          selected={selectedFilters.includes(mealType)}
+          onPress={() => handleTagPress(mealType)}
+        />
+          ))}
+          {recipe.dietaryPreferences.map((dietaryPreferences, index) => (
+          //   <View key={index} style={styles.filterTag}>
+          //   <Text style={styles.filterText}>{dietaryPreferences}</Text>
+          // </View>
+        <FilterTag 
+        key={index}
+        label={dietaryPreferences}
+        selected={selectedFilters.includes(dietaryPreferences)}
+        onPress={() => handleTagPress(dietaryPreferences)}
+      />
+          ))}
+          {recipe.cuisine.map((cuisine, index) => (
+          // <View key={index} style={styles.filterTag}>
+          //   <Text style={styles.filterText}>{cuisine}</Text>
+          // </View>
+          
+        <FilterTag 
+        key={index}
+        label={cuisine}
+        selected={selectedFilters.includes(cuisine)}
+        onPress={() => handleTagPress(cuisine)}
+      />
+            
+          ))}
+          {/* {recipe.averageCost.map((averageCost, index) => (
+            <View key={index} style={styles.filterTag}>
+              <Text style={styles.filterText}>{averageCost}</Text>
+            </View>
+          ))} */}
       </View>
 
       {/* imported from Back end Filter Section */}
-      {recipe.tags.map((tag, index) => (
+      {/* {recipe.tags.map((tag, index) => (
         <View key={index} style={styles.filterTag}>
           <Text style={styles.filterText}>{tag}</Text>
         </View>
-      ))}
+      ))} */}
 
       {/* contains the sections for serving sizes, preparation time, and time to cook */}
       <View style={styles.detailsRow}>
@@ -180,6 +292,10 @@ const RecipeDetailScreen = ({ route, navigation }) => {
         <TouchableOpacity style={styles.addReviewButton} onPress={handleAddReviewPress}>
           <Text style={styles.addReviewButtonText}>Add a Review</Text>
         </TouchableOpacity>
+      </View>
+
+      <View style={styles.addButtonContainer}>
+        <Button title="Add to Grocery List" onPress={addIngredientsToGroceryList} />
       </View>
 
       <View>

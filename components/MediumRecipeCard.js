@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Rating } from 'react-native-ratings';
 import { useFavorite } from '../contexts/BookmarkContext';
+import FilterTag from './FilterTags';
 
 const MediumRecipeCard = ({ item, onPress }) => {
     const { isFavorite, addFavorite, removeFavorite } = useFavorite();
@@ -36,14 +37,24 @@ const MediumRecipeCard = ({ item, onPress }) => {
                 </View>
                 <Text style={styles.mediumTitle}>{item.title}</Text>
                 <View style={styles.filtersContainer}>
-                    <View style={styles.filterTag}>
-                        <Text style={styles.filterText}>{item.mealType}</Text>
-                    </View>
-                    <View style={styles.filterTag}>
-                        <Text style={styles.filterText}>{item.cuisine}</Text>
-                    </View>
+                    {item.mealType.map((mealType, index) => (
+                            <FilterTag
+                            key={index}
+                            label={mealType}
+                            selected={true} // Recipe cards filters are not interactive, so true for filled in color
+                            type="mealType"
+                            />
+                        ))}
+                        {item.cuisine.map((cuisine, index) => (
+                            <FilterTag
+                            key={index}
+                            label={cuisine}
+                            selected={true} // Recipe cards filters are not interactive, so true for filled in color
+                            type="cuisine"
+                            />
+                        ))}
                 </View>
-                <Text style={styles.creator}>Created by: {item.creator}</Text>
+                <Text style={styles.creator}>Created by: {item.username}</Text>
             </View>
         </TouchableOpacity>
     );
