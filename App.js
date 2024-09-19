@@ -37,6 +37,7 @@ import { useFonts } from 'expo-font';
 import FontLoader from './utils/FontLoader';
 import Onboarding from './screens/Onboarding';
 import AuthNavigator from './navigation/AuthNavigator';
+import CustomDrawerContent from './components/CustomDrawer';
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -92,8 +93,13 @@ function TabNavigator() {
           }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#ff6347',
-        tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: '#fff',
+        tabBarInactiveTintColor: '#fff',
+        tabBarActiveBackgroundColor: '#B8AA00',
+        tabBarInactiveBackgroundColor: '#7FB069',
+        tabBarStyle:{
+          backgroundColor: '#7FB069',
+        },
       })}
     >
       <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
@@ -181,13 +187,23 @@ function NoDrawerStackNavigator() {
 
 function DrawerNavigator() {
   return (
-    <Drawer.Navigator initialRouteName="Home">
-      <Drawer.Screen name="CookUp" component={TabNavigator} options={{ headerShown: false }} />
-      <Drawer.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
-      <Drawer.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
-      <Drawer.Screen name="Your Menus" component={YourMenusPage} options={{ headerShown: false }} />
-      <Drawer.Screen name="Dietary Restrictions" component={DietaryRestrictionsPage} options={{ headerShown: false }} />
-      <Drawer.Screen name="Logout" component={Logout} />
+    // <Drawer.Navigator initialRouteName="Home">
+    //   <Drawer.Screen name="CookUp" component={TabNavigator} options={{ headerShown: false }} />
+    //   <Drawer.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
+    //   <Drawer.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
+    //   <Drawer.Screen name="Your Menus" component={YourMenusPage} options={{ headerShown: false }} />
+    //   <Drawer.Screen name="Dietary Restrictions" component={DietaryRestrictionsPage} options={{ headerShown: false }} />
+    //   <Drawer.Screen name="Logout" component={Logout} />
+    // </Drawer.Navigator>
+
+    <Drawer.Navigator
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
+      screenOptions={{
+        headerShown: false,  // If you don't want a header on individual screens
+      }}
+    >
+      <Drawer.Screen name="Home" component={TabNavigator} />
+      <Drawer.Screen name="Settings" component={SettingsScreen} />
     </Drawer.Navigator>
   );
 }

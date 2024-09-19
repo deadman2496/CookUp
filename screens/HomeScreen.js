@@ -14,6 +14,7 @@ import { useRecipes } from '../contexts/RecipeContext';
 // calls upon recipes offline MOSTLY FOR DEBUGGING ONLY import { getAllRecipes } from '../utils/RecipeCaller';
 import axios from 'axios';
 import { getRecipes } from '../api';
+import Header from '../components/LoggedInHeader';
 
 
 const HomeScreen = () => {
@@ -91,34 +92,35 @@ const HomeScreen = () => {
 
    return (
     <SafeAreaView style={styles.container}>
-        <ScrollView>
-      {/* <Text style={styles.sectionTitle}>On Your Menu</Text>
-      {favoriteRecipes.length > 0 ? (
-      <FlatList
-        horizontal
-        data={favoriteRecipes}
-        renderItem={renderSmallCard}
-        keyExtractor={(item) => item.$id}
-        showsHorizontalScrollIndicator={false}
+      <Header title="CookUp" isMenu={true}/>
+      <ScrollView>
+        {/* <Text style={styles.sectionTitle}>On Your Menu</Text>
+        {favoriteRecipes.length > 0 ? (
+        <FlatList
+          horizontal
+          data={favoriteRecipes}
+          renderItem={renderSmallCard}
+          keyExtractor={(item) => item.$id}
+          showsHorizontalScrollIndicator={false}
+        />
+        ) : (
+          <Text style={styles.emptyText}>You haven't favorited any recipes yet!</Text>
+        )} */}
+        <Text style={styles.sectionTitle}>Recommended for You</Text>
+        <FlatList
+          horizontal
+          data={recommendedRecipes}
+          renderItem={renderMediumCard}
+          keyExtractor={item => item.$id}
+          showsHorizontalScrollIndicator={false}
       />
-      ) : (
-        <Text style={styles.emptyText}>You haven't favorited any recipes yet!</Text>
-      )} */}
-      <Text style={styles.sectionTitle}>Recommended for You</Text>
-      <FlatList
-        horizontal
-        data={recommendedRecipes}
-        renderItem={renderMediumCard}
-        keyExtractor={item => item.$id}
-        showsHorizontalScrollIndicator={false}
-     />
-      <Text style={styles.sectionTitle}>Your Feed</Text>
-      <FlatList
-        data={latestRecipes}
-        renderItem={renderLargeCard}
-        keyExtractor={item => item.$id}
-        showsVerticalScrollIndicator={false}
-      />
+        <Text style={styles.sectionTitle}>Your Feed</Text>
+        <FlatList
+          data={latestRecipes}
+          renderItem={renderLargeCard}
+          keyExtractor={item => item.$id}
+          showsVerticalScrollIndicator={false}
+        />
       </ScrollView>
     </SafeAreaView>
   );

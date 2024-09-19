@@ -27,7 +27,7 @@ import CaesarSalad from '../assets/images/Caesar_Salad.png';
 import PoundCake from '../assets/images/Traditional_Pound_Cake.png';
 import SpanishFlan from '../assets/images/Spanish_Flan.png';
 import ChickenTeriyaki from '../assets/images/Chicken_Teriyaki.png';
-
+import DrawerBackground from '../assets/images/drawer_background.png';
 
 
 
@@ -60,5 +60,6 @@ export default {
     CaesarSalad,
     PoundCake,
     SpanishFlan,
-    ChickenTeriyaki
+    ChickenTeriyaki,
+    DrawerBackground
 };

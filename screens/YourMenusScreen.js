@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, SafeAreaView } from 'react-native';
 import SmallRecipeCard from '../components/SmallRecipeCard';
 import { recipes } from '../constants/recipeindex';
+import Header from '../components/LoggedInHeader';
 
 const menus = [
     {
@@ -120,6 +121,7 @@ const YourMenusPage = () => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
+      <Header title=" Your Menus" isMenu={true} />
       <FlatList
         data={menus}
         renderItem={renderMenu}
