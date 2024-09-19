@@ -5,9 +5,27 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import { images } from '../constants';
 import * as Font from 'expo-font'; 
 import { useNavigation } from '@react-navigation/native';
+import { checkAuth, signOutUser } from '../utils/auth';
+import TabNavigator from '../navigation/TabNavigator';
+import ProfileScreen from '../screens/ProfileScreen';
+import SettingsScreen from '../screens/SettingsScreen';
+import YourMenusPage from '../screens/YourMenusScreen';
+import DietaryRestrictionsPage from '../screens/DietaryRestrictionsScreen';
+
+
 
 const CustomDrawerContent = (props) => {
     const navigation = useNavigation();
+
+    const handleLogout = async () => {
+      try {
+        await signOutUser();  // Your logout logic here
+        alert('Logged out Successfully');
+        navigation.replace('SignIn');  // Navigate to SignIn after logout
+      } catch (error) {
+        console.error('Error signing out:', error);
+      }
+    };
 
     const [fontsLoaded] = Font.useFonts({
         'Shrikhand-Regular': require('../assets/fonts/Shrikhand-Regular.ttf'),
@@ -17,7 +35,7 @@ const CustomDrawerContent = (props) => {
         <SafeAreaView style={styles.safeArea}>
       {/* Top Section with Cookup Title and User Greeting */}
       {/* Top Section with Cookup Title as a Touchable */}
-      <TouchableOpacity onPress={() => navigation.navigate('Home')}>
+      <TouchableOpacity onPress={() => navigation.navigate('CookUp')}>
         <View style={styles.header}>
           <Text style={[styles.title, { fontFamily: 'Shrikhand-Regular'}]}>Cookup</Text>
           <Text style={styles.greeting}>Hi, Cassandra</Text>
@@ -26,29 +44,29 @@ const CustomDrawerContent = (props) => {
 
       {/* Drawer Menu Items */}
       <DrawerContentScrollView {...props} contentContainerStyle={styles.drawerContent}>
-        <DrawerItemList {...props} />
+        {/* <DrawerItemList {...props} /> */}
         {/* Custom Drawer Items */}
-        <TouchableOpacity style={styles.drawerItem} onPress={() => alert('Your Profile pressed')}>
+        <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('Profile')}>
           <Icon name="user-circle" size={20} color="#fff" />
           <Text style={styles.drawerLabel}>Your Profile</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.drawerItem} onPress={() => alert('Settings pressed')}>
+        <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('Settings')}>
           <Icon name="cog" size={20} color="#fff" />
           <Text style={styles.drawerLabel}>Settings</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.drawerItem} onPress={() => alert('Your Menus pressed')}>
+        <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('Your Menus')}>
           <Icon name="utensils" size={20} color="#fff" />
           <Text style={styles.drawerLabel}>Your Menus</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.drawerItem} onPress={() => alert('Dietary Restrictions pressed')}>
+        <TouchableOpacity style={styles.drawerItem} onPress={() => navigation.navigate('Dietary Restrictions')}>
           <Icon name="exclamation-triangle" size={20} color="#fff" />
           <Text style={styles.drawerLabel}>Dietary Restrictions</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.drawerItem} onPress={() => alert('Log Out pressed')}>
+        <TouchableOpacity style={styles.drawerItem} onPress={() => alert(handleLogout)}>
           <Icon name="sign-out-alt" size={20} color="#fff" />
           <Text style={styles.drawerLabel}>Log Out</Text>
         </TouchableOpacity>
@@ -104,7 +122,7 @@ const styles = StyleSheet.create({
   },
   imageBackground: {
     width: 500,
-    height: 300,  // Adjust this height based on how much of the drawer should be covered by the image
+    height: 375,  // Adjust this height based on how much of the drawer should be covered by the image
     position: 'absolute',
     bottom: 0,
     left: -215,

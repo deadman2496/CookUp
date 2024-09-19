@@ -13,17 +13,24 @@
     },
     "ios": {
       "supportsTablet": true,
-      "package":"com.kba.cookup"
+      "package": "com.kba.cookup",
+      "bundleIdentifier": "com.alexis2995.CookUp"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff",
-        "package":"com.kba.cookup"
-      }
+        "package": "com.kba.cookup"
+      },
+      "package": "com.alexis2995.CookUp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "b60f88f9-9e8d-424f-9ce8-1584a627d809"
+      }
     }
   }
 }

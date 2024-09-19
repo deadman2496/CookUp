@@ -77,6 +77,7 @@ export function Onboard() {
 function TabNavigator() {
   return (
     <Tab.Navigator
+      initialRouteName='CookUp'
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
           let iconName;
@@ -198,12 +199,13 @@ function DrawerNavigator() {
 
     <Drawer.Navigator
       drawerContent={(props) => <CustomDrawerContent {...props} />}
-      screenOptions={{
-        headerShown: false,  // If you don't want a header on individual screens
-      }}
+      initialRouteName='Cookup'
     >
-      <Drawer.Screen name="Home" component={TabNavigator} />
-      <Drawer.Screen name="Settings" component={SettingsScreen} />
+      <Drawer.Screen name="CookUp" component={TabNavigator} options={{ headerShown: false, drawerLabel: () => null, title: null, unmountOnBlur: true }} />
+      <Drawer.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false, drawerLabel: () => null, title: null, unmountOnBlur: true }} />
+      <Drawer.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false, drawerLabel: () => null, title: null, unmountOnBlur: true }} />
+      <Drawer.Screen name="Your Menus" component={YourMenusPage} options={{ headerShown: false, drawerLabel: () => null, title: null, unmountOnBlur: true }} />
+      <Drawer.Screen name="Dietary Restrictions" component={DietaryRestrictionsPage} options={{ headerShown: false, drawerLabel: () => null, title: null, unmountOnBlur: true }} />
     </Drawer.Navigator>
   );
 }
