@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Image, Modal, FlatList, SafeAreaView } from 'react-native';
+import { View, TextInput, Button, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Image, Modal, FlatList } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { Ionicons } from '@expo/vector-icons';
 import { mealTypes, cuisines, dietaryPreferences } from '../utils/filters';
 import { useRecipes } from '../contexts/RecipeContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { addNewRecipe } from '../lib/appwrite';
-import FilterTag from '../components/FilterTags';
 
 const NewRecipeScreen = ({navigation}) => {
   //const { addNewRecipe } = useRecipes(); // Access to addNewRecipe from RecipeContext
@@ -35,7 +34,7 @@ const NewRecipeScreen = ({navigation}) => {
     if (images.length < 1) errors.push('At least one image is required');
 
     return errors;
-  };
+  }
 
   const addIngredient = () => {
     setIngredients([...ingredients, { name: '', quantity: '', unit : '' }]);
@@ -150,7 +149,6 @@ const NewRecipeScreen = ({navigation}) => {
       </Modal>
     }
   return (
-    <SafeAreaView style={styles.safeArea}>
     <ScrollView>
       <Text style={styles.label}>Recipe Title</Text>
       <TextInput
@@ -222,37 +220,49 @@ const NewRecipeScreen = ({navigation}) => {
       <Text styles={styles.filterCategory}>Meal Types</Text>
       <View style={styles.filterContainer}>
         {mealTypes.map((mealType) => (
-          <FilterTag 
+          <TouchableOpacity
             key={mealType}
-            label={mealType}
-            selected={selectedFilters.mealType.includes(mealType)}
+            style={[
+              styles.filterButton,
+              selectedFilters.mealType.includes(mealType) && styles.selectedFilterButton,
+            ]}
             onPress={() => toggleFilter('mealType', mealType)}
-            type = "mealType"
-          />
+          >
+            <Text>{mealType}</Text>
+          </TouchableOpacity>
+
         ))}
       </View>
       <Text styles={styles.filterCategory}>Cuisines</Text>
       <View style={styles.filterContainer}>
         {cuisines.map((cuisine) => (
-          <FilterTag 
-          key={cuisine}
-          label={cuisine}
-          selected={selectedFilters.cuisine.includes(cuisine)}
-          onPress={() => toggleFilter('cuisine', cuisine)}
-          type = "cuisine"
-        />
+          <TouchableOpacity
+            key={cuisine}
+            style={[
+              styles.filterButton,
+              selectedFilters.cuisine.includes(cuisine) && styles.selectedFilterButton,
+            ]}
+            onPress={() => toggleFilter('cuisine', cuisine )}
+          >
+            <Text>{cuisine}</Text>
+          </TouchableOpacity>
+
         ))}
       </View>
       <Text styles={styles.filterCategory}>DietaryPreferences</Text>
       <View style={styles.filterContainer}>
         {dietaryPreferences.map((preference) => (
-          <FilterTag 
-          key={preference}
-          label={preference}
-          selected={selectedFilters.dietaryPreferences.includes(preference)}
-          onPress={() => toggleFilter('dietaryPreferences', preference)}
-          type = "dietaryPreferences"
-        />
+          <TouchableOpacity
+            key={preference}
+            style={[
+              styles.filterButton,
+              selectedFilters.dietaryPreferences.includes(preference) && styles.selectedFilterButton,
+            ]}
+            onPress={() => toggleFilter('dietaryPreferences', preference )}
+          >
+            <Text>{preference}</Text>
+          </TouchableOpacity>
+
         ))}
       </View>
       </View>
@@ -297,18 +307,12 @@ const NewRecipeScreen = ({navigation}) => {
 
       <Button title="Submit Recipe" onPress={handleSubmit} />
     </ScrollView>
-    </SafeAreaView>
   );
 };
 
 export default NewRecipeScreen;
 
 const styles = StyleSheet.create({
-  safeArea:{
-    flex: 1,
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
-  },
   container: {
     flex: 1,
     padding: 20,

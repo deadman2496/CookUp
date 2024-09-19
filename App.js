@@ -15,7 +15,7 @@ import RecipeBoxScreen from './screens/RecipeBoxScreen';
 import NewRecipeScreen from './screens/NewRecipeScreen';
 import GroceryListScreen from './screens/GroceryListScreen';
 import ReviewPage from './screens/ReviewPage';
-import SignInScreen from '../RecipeApp/(auth)/sign-in';
+import SignInScreen from './(auth)/sign-in';
 import { Button, View } from 'react-native';
 import SearchScreen from './screens/SearchScreen';
 import RecipeDetailScreen from './screens/RecipeDetailScreen';
