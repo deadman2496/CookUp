@@ -182,7 +182,7 @@ function NoDrawerStackNavigator() {
 function DrawerNavigator() {
   return (
     <Drawer.Navigator initialRouteName="Home">
-      <Drawer.Screen name="Home" component={TabNavigator} options={{ headerShown: false }} />
+      <Drawer.Screen name="CookUp" component={TabNavigator} options={{ headerShown: false }} />
       <Drawer.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
       <Drawer.Screen name="Settings" component={SettingsScreen} options={{ headerShown: false }} />
       <Drawer.Screen name="Your Menus" component={YourMenusPage} options={{ headerShown: false }} />

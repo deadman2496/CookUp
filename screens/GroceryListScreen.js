@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import {getGroceryItems, addGroceryItem } from '../lib/appwrite';
 import CustomCheckbox from '../components/CustomCheckBox';
 import SmallRecipeCard from '../components/SmallRecipeCard';
+import Header from '../components/LoggedInHeader';
 
 const GroceryListScreen = () => {
         const [amount, setAmount] = useState(0);
@@ -68,6 +69,8 @@ const GroceryListScreen = () => {
       
         return (
           <SafeAreaView style={styles.container}>
+            {/* Custom Header */}
+            <Header title="Your Grocery List" isMenu={true}/>
              {/* Add new ingredient button */}
              <TouchableOpacity style={styles.addIngredientButton} onPress={() => setModalVisible(true)}>
                 <Text style={styles.addIngredientText}>add new ingredient</Text>
