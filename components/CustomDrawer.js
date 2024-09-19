@@ -19,9 +19,10 @@ const CustomDrawerContent = (props) => {
 
     const handleLogout = async () => {
       try {
-        await signOutUser();  // Your logout logic here
+        await signOutUser();
+        setIsAuthenticated(false);
         alert('Logged out Successfully');
-        navigation.replace('SignIn');  // Navigate to SignIn after logout
+        navigation.replace('SignIn');
       } catch (error) {
         console.error('Error signing out:', error);
       }
