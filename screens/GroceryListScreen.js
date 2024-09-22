@@ -3,86 +3,89 @@ import { View, Text, StyleSheet, TextInput, Button, Modal, FlatList, TouchableOp
 import RNPickerSelect from 'react-native-picker-select';
 import UnitConverter from '../constants/conversionTable';
 import { Ionicons } from '@expo/vector-icons';
-import {getGroceryItems, addGroceryItem } from '../lib/appwrite';
+import { getGroceryItems, addGroceryItem } from '../lib/appwrite'; // For backend data
 import CustomCheckbox from '../components/CustomCheckBox';
 import SmallRecipeCard from '../components/SmallRecipeCard';
 import Header from '../components/LoggedInHeader';
 
-const GroceryListScreen = () => {
-        const [amount, setAmount] = useState(0);
-        const [fromUnit, setFromUnit] = useState('teaspoon');
-        const [toUnit, setToUnit] = useState('tablespoon');
-        const [convertedAmount, setConvertedAmount] = useState(null);
-        const [modalVisible, setModalVisible ] = useState(false);
-        //const [groceryList, setGroceryList] = useState([]);
-        const [checkedItems, setCheckedItems] = useState([]);
-        //const [itemsToCondense, setItemsToCondense] = useState(2);
-        //const [bulkRecipes, setBulkRecipes] = useState([]);
+const DEBUG_MODE = true; // Toggle to switch between hardcoded and backend data
 
-        // Hardcoded grocery list items
-  const [groceryList, setGroceryList] = useState([
+const GroceryListScreen = () => {
+  const [amount, setAmount] = useState(0);
+  const [fromUnit, setFromUnit] = useState('teaspoon');
+  const [toUnit, setToUnit] = useState('tablespoon');
+  const [convertedAmount, setConvertedAmount] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [checkedItems, setCheckedItems] = useState([]);
+
+  // Hardcoded grocery list items
+  const hardcodedGroceryList = [
     { id: 1, name: 'Gluten Free Flour', recipe: 'Gluten Free Protein Pizza', quantity: '2', unit: 'cups' },
     { id: 2, name: 'Baking Powder', recipe: 'Gluten Free Protein Pizza', quantity: '1', unit: 'tsp' },
     { id: 3, name: 'Olive Oil', recipe: 'Gluten Free Protein Pizza', quantity: '1', unit: 'tbsp' },
     { id: 4, name: 'Chicken Wings', recipe: 'Homemade Fresh Chicken Broth', quantity: '6', unit: 'pieces' },
     { id: 5, name: 'Garlic', recipe: 'Homemade Fresh Chicken Broth', quantity: '10', unit: 'cloves' },
-  ]);
+  ];
 
   // Hardcoded bulk recipes
-  const [bulkRecipes, setBulkRecipes] = useState([
+  const hardcodedBulkRecipes = [
     { id: 1, title: 'Gluten Free Protein Pizza', author: 'by cassandrapde' },
     { id: 2, title: 'Homemade Fresh Chicken Broth', author: 'by lively_lover' },
-  ]);
+  ];
+
+  // State for grocery list and bulk recipes
+  const [groceryList, setGroceryList] = useState([]);
+  const [bulkRecipes, setBulkRecipes] = useState([]);
+
+  // Fetch from backend or use hardcoded data based on DEBUG_MODE
+  useEffect(() => {
+    const loadGroceryList = async () => {
+      if (DEBUG_MODE) {
+        // Use hardcoded data in debug mode
+        setGroceryList(hardcodedGroceryList);
+        setBulkRecipes(hardcodedBulkRecipes);
+      } else {
+        // Fetch grocery list from backend
+        try {
+          const backendGroceryList = await getGroceryItems();
+          setGroceryList(backendGroceryList);
+        } catch (error) {
+          console.error('Error fetching grocery list from backend:', error);
+        }
+      }
+    };
+
+    loadGroceryList();
+  }, []);
+
+  const toggleCheckbox = (itemId) => {
+    setCheckedItems((prevState) =>
+      prevState.includes(itemId) ? prevState.filter((id) => id !== itemId) : [...prevState, itemId]
+    );
+  };
+
+  const condenseGroceryList = () => {
+    const condensed = condenseList(groceryList); // Assume condenseList function exists
+    setGroceryList(condensed);
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      {/* Custom Header */}
+      <Header title="Your Grocery List" isMenu={true} />
       
-
-
-        const handleConvert = () => {
-          const result = convertUnits(amount, fromUnit, toUnit);
-          if (result) {
-            setConvertedAmount(result.toFixed(2));
-          } else {
-            setConvertedAmount('Conversion not possible');
-          }
-        };
-
-        useEffect(() => {
-          const fetchGroceryItems = async () => {
-          const items = await getGroceryItems();
-          setGroceryList(items);
-        };
-
-        fetchGroceryItems();
-        }, []);
-
-        const toggleCheckbox = (itemId) => {
-          setCheckedItems((prevState) =>
-            prevState.includes(itemId) ? prevState.filter((id) => id !== itemId) : [...prevState, itemId]
-          );
-        };
-
-        const condenseGroceryList = () => {
-          const condensed = condenseList(groceryList);
-          setGroceryList(condensed);
-        };
-        
-
+      {/* Add new ingredient button */}
+      <TouchableOpacity style={styles.addIngredientButton} onPress={() => setModalVisible(true)}>
+        <Text style={styles.addIngredientText}>Add new ingredient</Text>
+      </TouchableOpacity>
       
-        return (
-          <SafeAreaView style={styles.container}>
-            {/* Custom Header */}
-            <Header title="Your Grocery List" isMenu={true}/>
-             {/* Add new ingredient button */}
-             <TouchableOpacity style={styles.addIngredientButton} onPress={() => setModalVisible(true)}>
-                <Text style={styles.addIngredientText}>add new ingredient</Text>
-             </TouchableOpacity>
-            
-            {/* Grocery List */}
+      {/* Grocery List */}
       <FlatList
         data={groceryList}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.ingredientRow}>
-            <CustomCheckbox 
+            <CustomCheckbox
               isChecked={checkedItems.includes(item.id)}
               onPress={() => toggleCheckbox(item.id)}
               label={item.name}
@@ -98,7 +101,7 @@ const GroceryListScreen = () => {
 
       {/* Condense Items Button */}
       <TouchableOpacity style={styles.condenseButton} onPress={condenseGroceryList}>
-        <Text style={styles.condenseButtonText}>2 items to consolidate</Text>
+        <Text style={styles.condenseButtonText}>Condense Items</Text>
       </TouchableOpacity>
 
       {/* Bulk Recipes Section */}
@@ -110,16 +113,11 @@ const GroceryListScreen = () => {
           keyExtractor={(item) => item.id.toString()}
           renderItem={({ item }) => (
             <SmallRecipeCard
-              item={item} // Pass the recipe item directly to SmallRecipeCard
-              onPress={() => {
-                () => navigation.navigate("RecipeDetails", { recipe: item.$id },)
-              }}
+              item={item}
+              onPress={() => navigation.navigate('RecipeDetails', { recipe: item.id || item.$id })}
             />
           )}
         />
-        <TouchableOpacity style={styles.editButton}>
-          <Text style={styles.editButtonText}>edit</Text>
-        </TouchableOpacity>
       </View>
 
       {/* Modal for Adding Ingredient */}
@@ -134,36 +132,8 @@ const GroceryListScreen = () => {
           <Button title="Close" onPress={() => setModalVisible(false)} />
         </View>
       </Modal>
-
-            
-            <View>
-            <FlatList 
-              data={groceryList}
-              keyExtractor={(item) => item.id}
-              renderItem={({item}) => (
-                <View>
-                  <Text style={styles.IngredientLabel}>{item.name}</Text>
-                  <Text style={styles.recipeLabel}>({item.recipe})</Text>
-                </View>
-              )}
-            />
-            <Button title="Condense Grocery List" onPress={condenseGroceryList} />
-            </View>
-            <Button title='Convert Units' onPress={() => setModalVisible(true)}/>
-
-            <Modal
-                animationType="slide"
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
-            >
-                <View>
-                    <UnitConverter />
-                    <Button title="Close" onPress={() => setModalVisible(false)} />
-                </View>
-            </Modal>
-                
-          </SafeAreaView>
-        );
+    </SafeAreaView>
+  );
 };
 
 const styles = StyleSheet.create({
@@ -231,34 +201,6 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 10,
-  },
-  recipeCard: {
-    marginRight: 15,
-    padding: 10,
-    backgroundColor: '#fff',
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-  },
-  recipeTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-  },
-  recipeAuthor: {
-    fontSize: 12,
-    color: '#888',
-  },
-  editButton: {
-    marginTop: 15,
-    alignSelf: 'flex-end',
-    padding: 8,
-    backgroundColor: '#f57c00',
-    borderRadius: 5,
-  },
-  editButtonText: {
-    color: '#fff',
-    fontSize: 12,
   },
   modalContent: {
     flex: 1,

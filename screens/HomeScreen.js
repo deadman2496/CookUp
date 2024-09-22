@@ -4,66 +4,65 @@ import { View, Text, FlatList, TouchableOpacity, StyleSheet, ScrollView, SafeAre
 import { Ionicons } from '@expo/vector-icons';
 import { Rating } from 'react-native-ratings';
 import { recipes, featuredRecipes } from '../constants/recipeindex';
-import { getAllRecipes } from '../lib/appwrite';
 import { useNavigation } from '@react-navigation/native';
 import SmallRecipeCard from '../components/SmallRecipeCard';
 import MediumRecipeCard from '../components/MediumRecipeCard';
 import LargeRecipeCard from '../components/LargeRecipeCard';
 import { useFavorite } from '../contexts/BookmarkContext';
+
+// calls upon recipes offline MOSTLY FOR DEBUGGING ONLY
 import { useRecipes } from '../contexts/RecipeContext';
-// calls upon recipes offline MOSTLY FOR DEBUGGING ONLY import { getAllRecipes } from '../utils/RecipeCaller';
-import axios from 'axios';
-import { getRecipes } from '../api';
+
+// calls upon back-end recipes change back-end at recipe caller 
+import { getAllRecipes } from '../utils/RecipeCaller';
+
 import Header from '../components/LoggedInHeader';
 
+const DEBUG_MODE = true;
 
 const HomeScreen = () => {
   const navigation = useNavigation();
   const { favoriteRecipes } = useFavorite(); 
   
     // vvvv These variables are for the local Recipes. mostly for debugging.  vvvvvv
-    //  const { recipes } = useRecipes();
-    // const {setRecipes} = useState([]);
+     const { recipes: localRecipes } = useRecipes();
   
     //This one is for use to call upon back-end programs 
-  const [recipes, setRecipes ] = useState([]);
+    const [recipes, setRecipes ] = useState([]);
 
   // vvvvv These Variables go with the fetch recipes for use with the local Recipe Index. and Recipe Context. vvvv
-  // useEffect(() => {
-  //  const fetchRecipes = async () => {
-  //   try {
-  //     const data = await getRecipes();
-  //     setRecipes(data);
-  //   } catch (error){
-
-  //     console.error('Failed to fetch recipes', error);
-  //   };
-  //  };
-   
-  //  fetchRecipes();
-  // }, []);
-
-    // vvvv This Variable calls upon the Recipes from the Back End server. vvvv
-    // useEffect(() => {
-    //   async function fetchRecipes() {
-    //     const fetchedRecipes = await getAllRecipes();
-    //     setRecipes(fetchedRecipes);
-    //   }
-    //   fetchRecipes();
-    // }, []);
-
-    useEffect(() => {
-      const fetchRecipes = async () => {
-        try {
-          const fetchedRecipes = await getAllRecipes(); // Fetch recipes from Appwrite
-          setRecipes(fetchedRecipes); // Set the fetched recipes to state
-        } catch (error) {
-          console.error('Error fetching recipes:', error);
+  useEffect(() => {
+    const fetchRecipes = async () => {
+        if (DEBUG_MODE) {
+            // Load hardcoded recipes from RecipeContext
+            setRecipes(localRecipes);
+        } else {
+            // Fetch recipes from backend using RecipeCaller
+            try {
+                const backendRecipes = await getAllRecipes();
+                setRecipes(backendRecipes);
+            } catch (error) {
+                console.error('Error fetching recipes:', error);
+            }
         }
-      };
+    };
+
+    fetchRecipes();
+}, [localRecipes]);
+   
+   // code for only the backend
+    // useEffect(() => {
+    //   const fetchRecipes = async () => {
+    //     try {
+    //       const fetchedRecipes = await getAllRecipes(); // Fetch recipes from Appwrite
+    //       setRecipes(fetchedRecipes); // Set the fetched recipes to state
+    //     } catch (error) {
+    //       console.error('Error fetching recipes:', error);
+    //     }
+    //   };
   
-      fetchRecipes();
-    }, []);
+    //   fetchRecipes();
+
 
   const recommendedRecipes = recipes.slice(0,5);
   const latestRecipes= recipes.slice(5,10); 
@@ -72,21 +71,21 @@ const HomeScreen = () => {
    const renderSmallCard = ({ item }) => (
       <SmallRecipeCard 
         item={item}
-        onPress={() => navigation.navigate("RecipeDetails", { recipe: item.$id },)}
+        onPress={() => navigation.navigate("RecipeDetails", { documentId: item.id || item.$id },)}
       />
     );
 
     const renderMediumCard = ({ item }) => (
       <MediumRecipeCard 
         item={item}
-        onPress={() => navigation.navigate("RecipeDetails",{ recipe: item.$id })}
+        onPress={() => navigation.navigate("RecipeDetails",{ documentId: item.id || item.$id })}
       />
      );
 
   const renderLargeCard = ({ item }) => (
     <LargeRecipeCard 
       item={item}
-      onPress={() => navigation.navigate("RecipeDetails", { recipe: item.$id })}
+      onPress={() => navigation.navigate("RecipeDetails", { documentId: item.id || item.$id })}
     />
   );
 
@@ -94,7 +93,7 @@ const HomeScreen = () => {
     <SafeAreaView style={styles.container}>
       <Header title="CookUp" isMenu={true}/>
       <ScrollView>
-        {/* <Text style={styles.sectionTitle}>On Your Menu</Text>
+        <Text style={styles.sectionTitle}>On Your Menu</Text>
         {favoriteRecipes.length > 0 ? (
         <FlatList
           horizontal
@@ -105,7 +104,7 @@ const HomeScreen = () => {
         />
         ) : (
           <Text style={styles.emptyText}>You haven't favorited any recipes yet!</Text>
-        )} */}
+        )}
         <Text style={styles.sectionTitle}>Recommended for You</Text>
         <FlatList
           horizontal

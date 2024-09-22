@@ -8,10 +8,18 @@ import { TabView, SceneMap } from 'react-native-tab-view';
 import { useFavorite } from '../contexts/BookmarkContext';
 import UnitConverter from '../constants/conversionTable';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getRecipeById, getAllRecipes } from '../lib/appwrite';
 import FilterTag from '../components/FilterTags';
 import { addGroceryItem } from '../lib/appwrite';
 
+//this imports recipes from the back-end must turn off calling from recipe index
+// calls upon recipes offline MOSTLY FOR DEBUGGING ONLY
+import { useRecipes } from '../contexts/RecipeContext';
+import { recipes } from '../constants/recipeindex';
+
+// calls upon back-end recipes change back-end at recipe caller 
+import { getRecipeById } from '../utils/RecipeCaller';
+
+const DEBUG_MODE = true;
 
 const RecipeDetailScreen = ({ route, navigation }) => {
     const { documentId } = route.params;
@@ -27,33 +35,76 @@ const RecipeDetailScreen = ({ route, navigation }) => {
       { key: 'instructions', title: 'Instructions' },
       ]);
 
+      //this calls upon the recipes stored in the back end
+    // useEffect(() => {
+    //   const fetchRecipe = async () => {
+    //     try {
+    //       console.log("Fetching recipe with ID:", documentId);
+
+    //       const fetchedRecipe = await getRecipeById(documentId);
+
+    //       console.log("Fetched recipe from Appwrite:", fetchedRecipe);
+
+    //       setRecipe(fetchedRecipe);
+    //     } catch (error) {
+    //       console.error('Failed to fetch recipe:', error);
+    //     } finally {
+    //       setLoading(false);
+    //     }
+    //   };
+
+    //   fetchRecipe();
+    // }, [documentId]);
+
+    // //this calls on the recipe in the local files
+    // useEffect (() => {
+    //   const fetchedRecipe = recipes.find(r => r.id === documentId);
+    // }, [documentId])
+
+    // if (!recipe) {
+    //   return (
+    //     <View>
+    //       <Text>Loading....</Text>
+    //     </View>
+    //   );
+    // }
+
     useEffect(() => {
       const fetchRecipe = async () => {
-        try {
-          console.log("Fetching recipe with ID:", documentId);
-
-          const fetchedRecipe = await getRecipeById(documentId);
-
-          console.log("Fetched recipe from Appwrite:", fetchedRecipe);
-
-          setRecipe(fetchedRecipe);
-        } catch (error) {
-          console.error('Failed to fetch recipe:', error);
-        } finally {
+          setLoading(true);
+          if (DEBUG_MODE) {
+              // Fetch recipe from local context (hardcoded)
+              const localRecipe = recipes.find((r) => r.id === documentId);
+              setRecipe(localRecipe);
+          } else {
+              // Fetch recipe from back-end
+              try {
+                  const fetchedRecipe = await getRecipeById(documentId);
+                  setRecipe(fetchedRecipe);
+              } catch (error) {
+                  console.error('Error fetching recipe from backend:', error);
+              }
+          }
           setLoading(false);
-        }
       };
-
       fetchRecipe();
-    }, [documentId]);
+  }, [documentId]);
 
-    if (!recipe) {
+  if (loading) {
       return (
-        <View>
-          <Text>Loading....</Text>
-        </View>
+          <View>
+              <Text>Loading....</Text>
+          </View>
       );
-    }
+  }
+
+  if (!recipe) {
+      return (
+          <View>
+              <Text>Recipe not found</Text>
+          </View>
+      );
+  }
 
     const handleBookmarkToggle = () => {
       if (isFavorite(recipe.id)) {
@@ -163,12 +214,12 @@ const RecipeDetailScreen = ({ route, navigation }) => {
 
   return (
     <ScrollView style={StyleSheet.container} showsVerticalScrollIndicator={false}>
-      <Image source={{ uri: recipe.imageUrl}} style={styles.image} />
+      <Image source={{ uri: recipe.image || recipe.imageUrl }} style={styles.image} />
 
       <View style={styles.infoContainer}>
         {/* contains title, reviews, who it was created by and the bookmark icon */}
       <View style={styles.headerRow}>
-        <Text style={styles.creatorText}>by {recipe.username}</Text>
+        <Text style={styles.creatorText}>by {recipe.creator || recipe.username}</Text>
         <View style={styles.ratingRow}>
         <Rating
           type="star"

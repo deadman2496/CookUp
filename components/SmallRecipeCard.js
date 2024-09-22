@@ -7,29 +7,34 @@ import { useFavorite } from '../contexts/BookmarkContext';
 
 const SmallRecipeCard = ({ item, onPress}) => {
     const { isFavorite, addFavorite, removeFavorite } = useFavorite();
+    const DEBUG_MODE = true;  // Toggle this to true for hardcoded data, false for backend
+
 
     const handleBookmarkToggle = () => {
-        if (isFavorite(item.id)) {
-            removeFavorite(item.id);
+        const recipeId = item.id || item.$id; //calls upon either id (the locally saved file) or $id (the one on the backend)
+        if (isFavorite(recipeId)) {
+            removeFavorite(recipeId);
         } else {
             addFavorite(item);
         }
     };
+
+
     return (
         <TouchableOpacity style={styles.smallCard} onPress={onPress}>
-            <Image source={item.image} style={styles.smallImage} />
+            <Image source={{ uri: item.image || item.imageUrl }} style={styles.smallImage} />
             <View style={styles.infoContainer}>
                 <View style={styles.ratingBookmarkContainer}>
                     <Rating 
                         type="star"
                         ratingCount={5}
                         imageSize={12}
-                        startingValue={item.rating}
+                        startingValue={item.rating || 0 }
                         readonly
                     />
                     <TouchableOpacity onPress={handleBookmarkToggle}>
                         <Ionicons 
-                            name={isFavorite(item.id) ? 'bookmark' : 'bookmark-outline'}
+                            name={isFavorite(item.id || item.$id) ? 'bookmark' : 'bookmark-outline'}
                             size={16}
                             color="green"
                         />
@@ -37,7 +42,7 @@ const SmallRecipeCard = ({ item, onPress}) => {
                 </View>
                 <Text style={styles.smallTitle}>{item.title}</Text>
             </View>
-            <Text style={styles.creator}>Created by: {item.creator}</Text>
+            <Text style={styles.creator}>Created by: {item.creator || item.username}</Text>
         </TouchableOpacity>
     );
  };

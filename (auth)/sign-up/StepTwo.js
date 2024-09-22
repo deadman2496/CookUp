@@ -20,8 +20,7 @@ const StepTwo = ({ navigation, route }) => {
         >
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
                 <View style={styles.titleContainer}>
-                    <Text style={styles.title}>SignUp</Text>
-                    <Text style={styles.message}>Getting to know a little more about you to get the best personalization possible.</Text>
+                    <Text style={styles.title}>Let's get your phone number</Text>
                 </View>
                 <TextInput
                 style={styles.input}

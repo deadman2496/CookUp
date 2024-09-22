@@ -7,6 +7,8 @@ import FilterTag from './FilterTags';
 
 const MediumRecipeCard = ({ item, onPress }) => {
     const { isFavorite, addFavorite, removeFavorite } = useFavorite();
+    const DEBUG_MODE = true;  // Toggle this to true for hardcoded data, false for backend
+
 
     const handleBookmarkToggle = () => {
         if (isFavorite(item.id)) {
@@ -15,9 +17,10 @@ const MediumRecipeCard = ({ item, onPress }) => {
             addFavorite(item);
         }
      };
+
     return (
         <TouchableOpacity style={styles.mediumCard} onPress={onPress}>
-            <Image source={item.image} style={styles.mediumImage} />
+            <Image source={{ uri: item.image || item.imageUrl }} style={styles.mediumImage} />
             <View style={styles.infoContainer}>
                 <View style={styles.ratingBookmarkContainer}>
                     <Rating
@@ -37,24 +40,14 @@ const MediumRecipeCard = ({ item, onPress }) => {
                 </View>
                 <Text style={styles.mediumTitle}>{item.title}</Text>
                 <View style={styles.filtersContainer}>
-                    {item.mealType.map((mealType, index) => (
-                            <FilterTag
-                            key={index}
-                            label={mealType}
-                            selected={true} // Recipe cards filters are not interactive, so true for filled in color
-                            type="mealType"
-                            />
-                        ))}
-                        {item.cuisine.map((cuisine, index) => (
-                            <FilterTag
-                            key={index}
-                            label={cuisine}
-                            selected={true} // Recipe cards filters are not interactive, so true for filled in color
-                            type="cuisine"
-                            />
-                        ))}
+                {(item.mealType || []).map((mealType, index) => (
+                        <FilterTag key={index} label={mealType} selected={true} />
+                    ))}
+                    {(item.cuisine || []).map((cuisine, index) => (
+                        <FilterTag key={index} label={cuisine} selected={true} />
+                    ))}
                 </View>
-                <Text style={styles.creator}>Created by: {item.username}</Text>
+                <Text style={styles.creator}>Created by: {item.creator || item.username}</Text>
             </View>
         </TouchableOpacity>
     );

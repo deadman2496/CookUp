@@ -18,7 +18,7 @@ const StepFour = ({ navigation, route }) => {
         }
 
         try {
-            const user = await createUser(email, password, username, firstName, lastName, phoneNumber);
+            //const user = await createUser(email, password, username, firstName, lastName, phoneNumber);
             //await sendVerificationEmail('');
             Alert.alert('Success', 'Account created successfully!');
             navigation.navigate('Onboard'); // Redirect to Sign In after successful sign-up
@@ -34,6 +34,9 @@ const StepFour = ({ navigation, route }) => {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={styles.keyboardAvoidingView}
         >
+            <View style={styles.titleContainer}>
+                    <Text style={styles.title}>Enter your email and password</Text>
+                </View>
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
             <TextInput
                 style={styles.input}
@@ -56,6 +59,7 @@ const StepFour = ({ navigation, route }) => {
                 onChangeText={setConfirmPassword}
                 secureTextEntry
             />
+            <Text style={styles.message}>Choose a combination of numbers and letters and capitalization to display on your profile</Text>
                 <TouchableOpacity style={styles.button} onPress={handleSignUp}>
                     <Text style={styles.buttonText}>Sign Up!</Text>    
                 </TouchableOpacity>

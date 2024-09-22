@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "RecipeApp",
-    "slug": "RecipeApp",
+    "slug": "cookup",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -29,8 +29,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "b60f88f9-9e8d-424f-9ce8-1584a627d809"
+        "projectId": "351cacdd-a94c-4790-af86-05c70ba0cd69"
       }
-    }
+    },
+    "owner": "alexis2995"
   }
 }

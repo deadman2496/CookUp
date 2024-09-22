@@ -20,8 +20,8 @@ const StepThree = ({ navigation, route }) => {
         >
             <ScrollView contentContainerStyle={styles.scrollViewContent}>
                 <View style={styles.titleContainer}>
-                    <Text style={styles.title}>SignUp</Text>
-                    <Text style={styles.message}>Getting to know a little more about you to get the best personalization possible.</Text>
+                    <Text style={styles.title}>Choose a Username</Text>
+                    <Text style={styles.message}>Choose a combination of numbers and letters to display on your profile</Text>
                 </View>
                 <TextInput
                 style={styles.input}

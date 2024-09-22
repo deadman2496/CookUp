@@ -4,12 +4,14 @@ import { useNavigation } from '@react-navigation/native';
 import { Picker } from '@react-native-picker/picker';
 import { recipes } from '../constants/recipeindex';
 import MediumRecipeCard from '../components/MediumRecipeCard';
-import { extractFilters } from '../utils/filters';
 import { useRecipes } from '../contexts/RecipeContext';
 import { getAllRecipes, getRecipesByTag } from '../utils/RecipeCaller';
+import { extractFilters } from '../utils/filters';
 
+code = DEBUG_MODE = true;
 
 const SearchScreen = ({ navigation }) => {
+  const { recipes: localRecipes } = useRecipes();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilters, setSelectedFilters] = useState({
     mealType: [],
@@ -39,13 +41,69 @@ const SearchScreen = ({ navigation }) => {
   //   setFilterOptions(extractFilters(recipes));
   // }, []);
 
+  // useEffect(() => {
+  //   async function fetchRecipes() {
+  //     const allRecipes = await getAllRecipes();
+  //     setFilteredRecipes(allRecipes);
+  //   }
+  //   fetchRecipes();
+  // }, []);
+
   useEffect(() => {
-    async function fetchRecipes() {
-      const allRecipes = await getAllRecipes();
-      setFilteredRecipes(allRecipes);
-    }
+    const fetchRecipes = async () => {
+      if (DEBUG_MODE) {
+        // Use local (hardcoded) recipes
+        setFilteredRecipes(localRecipes);
+        setFilterOptions(extractFilters(localRecipes));
+      } else {
+        // Fetch recipes from the backend using RecipeCaller
+        try {
+          const backendRecipes = await getAllRecipes();
+          setFilteredRecipes(backendRecipes);
+          setFilterOptions(extractFilters(backendRecipes));
+      } catch (error) {
+          console.error('Error fetching recipes from backend:', error);
+      }
+  }
+    };
     fetchRecipes();
-  }, []);
+  }, [localRecipes]);
+
+  const handleSearch = (query) => {
+    setSearchQuery(query);
+    filterRecipes(query, selectedFilters, modalFilters);
+  };
+
+  const filterRecipes = (query, selectedFilters, modalFilters) => {
+    let filtered = filteredRecipes.filter((recipe) => {
+        const matchesSearchQuery = recipe.title.toLowerCase().includes(query.toLowerCase());
+        const matchesSelectedMealType =
+            selectedFilters.mealType.length === 0 || selectedFilters.mealType.includes(recipe.mealType);
+        const matchesSelectedCuisine =
+            selectedFilters.cuisine.length === 0 || selectedFilters.cuisine.includes(recipe.cuisine);
+        const matchesSelectedDietaryPreferences =
+            selectedFilters.dietaryPreferences.length === 0 ||
+            selectedFilters.dietaryPreferences.some((preference) => recipe.dietaryPreferences.includes(preference));
+        const matchesModalMealType =
+            modalFilters.mealType.length === 0 || modalFilters.mealType.includes(recipe.mealType);
+        const matchesModalCuisine =
+            modalFilters.cuisine.length === 0 || modalFilters.cuisine.includes(recipe.cuisine);
+        const matchesModalDietaryPreferences =
+            modalFilters.dietaryPreferences.length === 0 ||
+            modalFilters.dietaryPreferences.some((preference) => recipe.dietaryPreferences.includes(preference));
+
+        return (
+            matchesSearchQuery &&
+            matchesSelectedMealType &&
+            matchesSelectedCuisine &&
+            matchesSelectedDietaryPreferences &&
+            matchesModalMealType &&
+            matchesModalCuisine &&
+            matchesModalDietaryPreferences
+        );
+    });
+    setFilteredRecipes(filtered);
+};
 
   useEffect(() => {
     const fetchRecipes = async () => {
@@ -67,48 +125,6 @@ const SearchScreen = ({ navigation }) => {
 
   const shuffleArray = (array) => {
     return array.sort(() => Math.random() - 0.5);
-};
-
-  const handleSearch = (query) => {
-    setSearchQuery(query);
-    filterRecipes(query, selectedFilters, modalFilters);
-   }
-
-  const filterRecipes = (query, selectedFilters, modalFilters) => {
-    let filtered = recipes.filter((recipe) => {
-        const matchesSearchQuery = recipe.title.toLowerCase().includes(query.toLowerCase());
-
-        const matchesSelectedMealType =
-            selectedFilters.mealType.length === 0 ||
-            selectedFilters.mealType.includes(recipe.mealType);
-
-        const matchesSelectedCuisine =
-            selectedFilters.cuisine.length === 0 ||
-            selectedFilters.cuisine.includes(recipe.cuisine);
-
-        const matchesSelectedDietaryPreferences =
-            selectedFilters.dietaryPreferences.length === 0 ||
-            selectedFilters.dietaryPreferences.some((preference) =>
-                recipe.dietaryPreferences.includes(preference)
-            );
-        const matchesModalMealType =
-            modalFilters.mealType.length === 0 ||
-            modalFilters.mealType.includes(recipe.mealType);
-
-        const matchesModalCuisine =
-            modalFilters.cuisine.length === 0 ||
-            modalFilters.cuisine.includes(recipe.cuisine);
-
-        const matchesModalDietaryPreferences =
-            modalFilters.dietaryPreferences.length === 0 ||
-            modalFilters.dietaryPreferences.some((preference) =>
-                recipe.dietaryPreferences.includes(preference)
-            );
-
-        return matchesSearchQuery && matchesSelectedMealType && matchesSelectedCuisine && matchesSelectedDietaryPreferences
-        && matchesModalMealType && matchesModalCuisine && matchesModalDietaryPreferences;
-    });
-    setFilteredRecipes(filtered);
 };
   const handleHorizontalFilterChange = (filterName, value) => {
     setSelectedFilters((prevFilters) => {
@@ -181,7 +197,7 @@ const SearchScreen = ({ navigation }) => {
         placeholder="find a recipe..."
         value={searchQuery}
         onChangeText={setSearchQuery}
-        onSubmitEditing={handleSearch}
+        onSubmitEditing={() => handleSearch(searchQuery)}
       />
 
       {/* Filter button */}

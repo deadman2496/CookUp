@@ -3,10 +3,13 @@ import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Rating } from 'react-native-ratings';
 import { useFavorite } from '../contexts/BookmarkContext';
+import FilterTag from './FilterTags';
 
 
 const LargeRecipeCard = ({ item, onPress}) => {
     const { isFavorite, addFavorite, removeFavorite } = useFavorite();
+    const DEBUG_MODE = true;  // Toggle this to true for hardcoded data, false for backend
+
 
     const handleBookmarkToggle = () => {
         if (isFavorite(item.id)) {
@@ -15,9 +18,10 @@ const LargeRecipeCard = ({ item, onPress}) => {
             addFavorite(item);
         }
      };
+
     return (
         <TouchableOpacity style={styles.largeCard} onPress={onPress}>
-            <Image source={item.image} style={styles.largeImage} />
+            <Image source={{ uri: item.image || item.imageUrl }} style={styles.largeImage} />
             <View style={styles.infoContainer}>
                 <View style={styles.ratingBookmarkContainer}>
                     <Rating
@@ -37,25 +41,25 @@ const LargeRecipeCard = ({ item, onPress}) => {
                 </View>
                 <Text style={styles.largeTitle}>{item.title}</Text>
                 <View style={styles.filtersContainer}>
-                    <View style={styles.filterTag}>
-                        <Text style={styles.filterText}>{item.cuisine}</Text>
-                    </View>
-                    <View style={styles.filterTag}>
-                        <Text style={styles.filterText}>{item.dietaryPreferences}</Text>
-                    </View>
+                {(item.cuisine || []).map((cuisine, index) => (
+                        <FilterTag key={index} label={cuisine} selected={true} />
+                    ))}
+                    {(item.dietaryPreferences || []).map((preference, index) => (
+                        <FilterTag key={index} label={preference} selected={true} />
+                    ))}
                     <View style={styles.filterTag}>
                         <Text style={styles.filterText}>{item.averageCost}</Text>
                     </View>
                 </View>
-                <View style={styles.filtersContainer}>
-                    {recipes.tags.map((tag, index) => (
+                {/* <View style={styles.filtersContainer}>
+                    {item.tags.map((tag, index) => (
                         <View key={index} style={styles.filterTag}>
                             <Text>{tag}</Text>
                         </View>
                     ))}
-                </View>
+                </View> */}
                 
-                <Text style={styles.creator}>Created by: {item.creator}</Text>
+                <Text style={styles.creator}>Created by: {item.creator || item.username}</Text>
             </View>
         </TouchableOpacity>
     );
